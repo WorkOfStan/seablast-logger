@@ -2,7 +2,7 @@
 
 namespace Seablast\Logger;
 
-use Seablast\Logger\BackyardTime;
+use Seablast\Logger\LoggerTime;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 
@@ -27,9 +27,9 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<mixed> $backyardConfConstruct
      * @param BackyardTime $backyardTime
      */
-    public function __construct(array $backyardConfConstruct = array(), BackyardTime $backyardTime = null)
+    public function __construct(array $backyardConfConstruct = array(), LoggerTime $backyardTime = null)
     {
-        $this->backyardTime = ($backyardTime === null) ? (new BackyardTime()) : $backyardTime;
+        $this->backyardTime = ($backyardTime === null) ? (new LoggerTime()) : $backyardTime;
         $this->backyardConf = array_merge(
             array(//default values
                 'logging_level' => 5, //log up to the level set here, default=5 = debug//logovat az do urovne zde uvedene: 0=unknown/default_call 1=fatal 2=error 3=warning 4=info 5=debug/default_setting 6=speed  //aby se zalogovala alespoň missing db musí být logování nejníže defaultně na 1 //1 as default for writing the missing db at least to the standard ErrorLog
