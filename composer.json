@@ -1,0 +1,33 @@
+{
+    "name": "seablast/logger",
+    "description": "PSR-3 compliant logger with Tracy logger wrapper",
+    "type": "library",
+    "require": {
+        "php": "^7.2 || ^8.0", 
+        "nette/utils": "^2.4.8 || ^3.2.2",
+        "psr/log": "^1.0 || ^2.0 || ^3.0",
+        "tracy/tracy": "^2.4.10"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stanislav Rejthar",
+            "email": "rejthar@stanislavrejthar.com"
+        }
+    ],
+    "support": {
+        "email": "rejthar@stanislavrejthar.com",
+        "issues": "https://github.com/WorkOfStan/seablast-logger/issues",
+        "source": "https://github.com/WorkOfStan/seablast-logger"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Seablast\\Logger\\": ["src/"]
+        }
+    }
+}
