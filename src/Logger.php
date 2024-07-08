@@ -10,16 +10,13 @@ class Logger extends AbstractLogger implements LoggerInterface
 {
 // phpcs:disable Generic.Files.LineLength
 
-    /**
-     *
-     * @var array<mixed> int,string,bool,array
-     */
+    /** @var array<mixed> int,string,bool,array */
     protected $conf = array();
-
-    /**
-     *
-     * @var LoggerTime
-     */
+    /** @var int */
+    private $overrideLoggingLevel;
+    /** @var float */
+    private $runningTime = 0;
+    /** @var LoggerTime */
     protected $time;
 
     /**
@@ -47,7 +44,13 @@ class Logger extends AbstractLogger implements LoggerInterface
             ),
             $conf
         );
+        $this->overrideLoggingLevel = $this->conf['logging_level'];
         //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
+    }
+
+    public function logAtLeastToLevel($newLevel)
+    {
+        $this->overrideLoggingLevel = $newLevel;
     }
 
     /**
@@ -205,11 +208,11 @@ class Logger extends AbstractLogger implements LoggerInterface
         //TODO: přidat proměnnou $line - mělo by být vždy voláno jako basename(__FILE__)."#".__LINE__ , takže bude jasné, ze které řádky source souboru to bylo voláno
         // Ve výsledku do logu zapíše:
         //[Timestamp: d-M-Y H:i:s] [Logging level] [$error_number] [$_SERVER['SCRIPT_FILENAME']] [username@gethostbyaddr($_SERVER['REMOTE_ADDR'])] [sec od startu stránky] $message
-        global
+        //global
         //$username,                  //Placeholder for logging users along.
-        $RUNNING_TIME,
-        $ERROR_HACK//,
-        ;
+        //$RUNNING_TIME,
+        //$ERROR_HACK//,
+        //;
         $username = 'anonymous'; //placeholder
 
         if (!is_string($message)) {
@@ -229,15 +232,16 @@ class Logger extends AbstractLogger implements LoggerInterface
                 $level <= max(
                     array(
                         $this->conf['logging_level'],
-                        $this->conf['error_hack_from_get'], //set potentially as GET parameter
-                        $ERROR_HACK, //set as variable in the application script
+                        $this->overrideLoggingLevel,
+                       // $this->conf['error_hack_from_get'], //set potentially as GET parameter
+                      //  $ERROR_HACK, //set as variable in the application script
                     )
                 )
             ) //to log 0=unknown/default 1=fatal 2=error 3=warning 4=info 5=debug 6=speed according to $level
             || (($error_number == "6") && ($this->conf['logging_level_page_speed'] <= $this->conf['logging_level'])) //speed logovat vždy když je ukázaná, resp. dle nastavení $logging_level_page_speed
         ) {
-            $RUNNING_TIME_PREVIOUS = $RUNNING_TIME;
-            if (((($RUNNING_TIME = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4)) - $RUNNING_TIME_PREVIOUS) > $this->conf['log_profiling_step']) && $this->conf['log_profiling_step']) {
+            $RUNNING_TIME_PREVIOUS = $this->runningTime;
+            if (((($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4)) - $RUNNING_TIME_PREVIOUS) > $this->conf['log_profiling_step']) && $this->conf['log_profiling_step']) {
                 $message = "SLOWSTEP " . $message; //110812, PROFILING
             }
 
@@ -248,7 +252,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf['logging_level_name'][$level] . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
                 . $username . "@"
                 . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')//phpunit test does not set REMOTE_ADDR
-                . "] [" . $RUNNING_TIME . "] ["
+                . "] [" . $this->runningTime . "] ["
                 . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')//phpunit test does not set REQUEST_URI
                 . "] ";
             //gethostbyaddr($_SERVER['REMOTE_ADDR'])// co udělá s IP, která nelze přeložit? nebylo by lepší logovat přímo IP?
