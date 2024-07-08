@@ -6,6 +6,10 @@ use Seablast\Logger\LoggerTime;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 
+/**
+ * TODO wrapper in backyard adds $RUNNING_TIME = $this->getLastRunningTime();
+ * TODO - KEEP dieGraciously
+ */
 class Logger extends AbstractLogger implements LoggerInterface
 {
 // phpcs:disable Generic.Files.LineLength
@@ -34,13 +38,13 @@ class Logger extends AbstractLogger implements LoggerInterface
                 'logging_file' => '', //soubor, do kterého má my_error_log() zapisovat
                 'logging_level_page_speed' => 5, //úroveň logování, do které má být zapisována rychlost vygenerování stránky
                 'error_log_message_type' => 0, //parameter message_type http://cz2.php.net/manual/en/function.error-log.php for my_error_log; default is 0, i.e. to send message to PHP's system logger; recommended is however 3, i.e. append to the file destination set either in field $this->conf['logging_file or in table system
-                'die_graciously_verbose' => true, //show details by die_graciously() on screen (it is always in the error_log); on production it is recomended to be set to to false due security
+                //'die_graciously_verbose' => true, //show details by die_graciously() on screen (it is always in the error_log); on production it is recomended to be set to to false due security
                 'mail_for_admin_enabled' => false, //fatal error may just be written in log //$backyardMailForAdminEnabled = "rejthar@gods.cz";//on production, it is however recommended to set an e-mail, where to announce fatal errors
                 'log_monthly_rotation' => true, //true, pokud má být přípona .log.Y-m.log (výhodou je měsíční rotace); false, pokud má být jen .log (výhodou je sekvenční zápis chyb přes my_error_log a jiných PHP chyb)
                 'log_standard_output' => false, //true, pokud má zároveň vypisovat na obrazovku; false, pokud má vypisovat jen do logu
                 'log_profiling_step' => false, //110812, my_error_log neprofiluje rychlost //$PROFILING_STEP = 0.008;//110812, my_error_log profiluje čas mezi dvěma měřenými body vyšší než udaná hodnota sec
-                'error_hacked' => true, //ERROR_HACK parameter is reflected
-                'error_hack_from_get' => 0, //in this field, the value of $_GET['ERROR_HACK'] shall be set below
+                //'error_hacked' => true, //ERROR_HACK parameter is reflected
+                //'error_hack_from_get' => 0, //in this field, the value of $_GET['ERROR_HACK'] shall be set below
             ),
             $conf
         );
@@ -48,9 +52,21 @@ class Logger extends AbstractLogger implements LoggerInterface
         //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
     }
 
+    /**
+     * Class doesn't automatically use any GET parameter to override the set logging level, as it could be used to flood the error log.
+     * It is however possible to programmatically raise the logging level set in configuration.
+     */
     public function logAtLeastToLevel($newLevel)
     {
         $this->overrideLoggingLevel = $newLevel;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLastRunningTime()
+    {
+        return $this->runningTime;
     }
 
     /**
@@ -160,19 +176,14 @@ class Logger extends AbstractLogger implements LoggerInterface
         return $this->log(5, $message, $context);
     }
 
-    public function forceLoggingSinceLevel(int $level )
-    {
-        // instead of ERROR_HACK
-    }
-
     /**
-     * Error_log() modified to log necessary debug information by application to its own log
-     * Logs with an arbitrary level.
+     * Error_log() modified to log necessary debug information by application to its own log.
+     * Logs with an arbitrary level, i.e. may not log debug info on production.
      * Compliant with PSR-3 http://www.php-fig.org/psr/psr-3/
      *
      * TODO remove global
-     * @global float $RUNNING_TIME
-     * @global int $ERROR_HACK
+     * x@xglobal float $RUNNING_TIME
+     * x@xglobal int $ERROR_HACK
      *
      * @param int $level Error level
      * @param string $message Message to be logged
