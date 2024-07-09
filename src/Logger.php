@@ -64,6 +64,9 @@ class Logger extends AbstractLogger implements LoggerInterface
      */
     public function logAtLeastToLevel(int $newLevel)
     {
+        if (!is_int($newLevel)) {
+            throw new \Exception('The variable $newLevel is not an integer.');
+        }
         $this->overrideLoggingLevel = (int) $newLevel;
     }
 
@@ -261,8 +264,8 @@ class Logger extends AbstractLogger implements LoggerInterface
                     array(
                         $this->conf['logging_level'],
                         $this->overrideLoggingLevel,
-                       // $this->conf['error_hack_from_get'], //set potentially as GET parameter
-                      //  $ERROR_HACK, //set as variable in the application script
+                        // $this->conf['error_hack_from_get'], //set potentially as GET parameter
+                        //  $ERROR_HACK, //set as variable in the application script
                     )
                 )
             ) //to log 0=unknown/default 1=fatal 2=error 3=warning 4=info 5=debug 6=speed according to $level
