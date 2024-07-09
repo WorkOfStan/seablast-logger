@@ -62,7 +62,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param int $newLevel
      * @return void
      */
-    public function logAtLeastToLevel($newLevel)
+    public function logAtLeastToLevel(int $newLevel)
     {
         $this->overrideLoggingLevel = (int) $newLevel;
     }
@@ -274,7 +274,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             }
 
             if ($this->conf['log_standard_output']) {
-                echo((($level <= 2) ? "<b>" : "") . "{$message} [{$RUNNING_TIME}]" . (($level <= 2) ? "</b>" : "") . "<hr/>" . PHP_EOL); //110811, if fatal or error then bold//111119, RUNNING_TIME
+                echo((($level <= 2) ? "<b>" : "") . "{$message} [{$this->runningTime}]" . (($level <= 2) ? "</b>" : "") . "<hr/>" . PHP_EOL); //110811, if fatal or error then bold//111119, RUNNING_TIME
             }
 
             $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf['logging_level_name'][$level] . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
