@@ -58,10 +58,13 @@ class Logger extends AbstractLogger implements LoggerInterface
     /**
      * Class doesn't automatically use any GET parameter to override the set logging level, as it could be used to flood the error log.
      * It is however possible to programmatically raise the logging level set in configuration.
+     *
+     * @param int $newLevel
+     * @return void
      */
     public function logAtLeastToLevel($newLevel)
     {
-        $this->overrideLoggingLevel = $newLevel;
+        $this->overrideLoggingLevel = (int) $newLevel;
     }
 
     /**
@@ -75,7 +78,7 @@ class Logger extends AbstractLogger implements LoggerInterface
     /**
      * DI setter.
      *
-     * @param int,string $user
+     * @param int|string $user
      * @return void
      */
     public function setUser($user)
@@ -270,7 +273,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 $message = "SLOWSTEP " . $message; //110812, PROFILING
             }
 
-            if ($this->backyardConf['log_standard_output']) {
+            if ($this->conf['log_standard_output']) {
                 echo((($level <= 2) ? "<b>" : "") . "{$message} [{$RUNNING_TIME}]" . (($level <= 2) ? "</b>" : "") . "<hr/>" . PHP_EOL); //110811, if fatal or error then bold//111119, RUNNING_TIME
             }
 
