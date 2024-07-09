@@ -39,6 +39,8 @@ jobs:
   
       - name: "PHP syntax"
         run: |
-          for file in ./src/*.php; do
-            php -l "$file"
-          done
+          #for file in ./src/*.php; do
+          #  php -l "$file"
+          #done
+          find ./ -name "*.php" | xargs -n 1 php -l
+  
