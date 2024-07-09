@@ -78,7 +78,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param int,string $user
      * @return void
      */
-    public function setUser($user): void
+    public function setUser($user)
     {
         $this->user = (string) $user;
     }
