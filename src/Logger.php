@@ -22,6 +22,8 @@ class Logger extends AbstractLogger implements LoggerInterface
     private $runningTime = 0;
     /** @var LoggerTime */
     protected $time;
+    /** @var string*/
+    private $user = 'unidentified';
 
     /**
      *
@@ -50,6 +52,7 @@ class Logger extends AbstractLogger implements LoggerInterface
         );
         $this->overrideLoggingLevel = $this->conf['logging_level'];
         //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
+        //240709 set later is probably not necessary 
     }
 
     /**
@@ -67,6 +70,17 @@ class Logger extends AbstractLogger implements LoggerInterface
     public function getLastRunningTime()
     {
         return $this->runningTime;
+    }
+
+    /**
+     * DI setter.
+     *
+     * @param int,string $user
+     * @return void
+     */
+    public function setUser($user): void
+    {
+        $this->user = (string) $user;
     }
 
     /**
@@ -224,7 +238,7 @@ class Logger extends AbstractLogger implements LoggerInterface
         //$RUNNING_TIME,
         //$ERROR_HACK//,
         //;
-        $username = 'anonymous'; //placeholder
+        //$username = 'anonymous'; //placeholder
 
         if (!is_string($message)) {
             error_log("wrong message: Backyard->log({$level}," . print_r($message, true) . ")");
@@ -261,10 +275,10 @@ class Logger extends AbstractLogger implements LoggerInterface
             }
 
             $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf['logging_level_name'][$level] . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
-                . $username . "@"
-                . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')//phpunit test does not set REMOTE_ADDR
+                . $this->user . "@"
+                . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')//PHPUnit test (CLI) does not set REMOTE_ADDR
                 . "] [" . $this->runningTime . "] ["
-                . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')//phpunit test does not set REQUEST_URI
+                . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')//PHPUnit test does not set REQUEST_URI
                 . "] ";
             //gethostbyaddr($_SERVER['REMOTE_ADDR'])// co udělá s IP, která nelze přeložit? nebylo by lepší logovat přímo IP?
             if (($this->conf['error_log_message_type'] == 3) && !$this->conf['logging_file']) {//$logging_file not set and it should be
