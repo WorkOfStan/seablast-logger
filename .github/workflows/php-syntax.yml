@@ -1,0 +1,55 @@
+---
+name: PHP syntax
+
+on:
+  push:
+    branches-ignore:
+      # notest branches to ignore testing of partial online commits
+      - 'notest/**'
+  pull_request:
+    branches-ignore:
+      # notest branches to ignore testing of partial online commits
+      - 'notest/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.operating-system }}
+    # Limit the running time
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        operating-system:
+          - "ubuntu-latest"
+        php-version: ["5.3", "5.6", "7.2", "7.3", "7.4", "8.2", "8.3"]
+        # If the bug https://bugs.php.net/bug.php?id=73803 materializes, then remove 7.1 from php-version list above, as
+        # ZipArchive class has public properties, that are not visible via reflection in PHP/7.1.
+        # Therefore using tools like PHPStan generates error: Access to an undefined property ZipArchive::$numFiles. in class\MyAdminProcess
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Install PHP ${{ matrix.php-version }} Test on ${{ runner.os }}"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          #tools: composer:v2, phpstan
+          # Note: phpstan call fails for PHP<7.1
+          # coverage none turns off Xdebug as in PHP 5.6,7.0 it would change (format) var_dump output
+          coverage: none
+        #env:
+          # fixes Error: Could not authenticate against github.com
+         # COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "PHP syntax"
+        #if: steps.check_files_database.outputs.files_exists == 'true'
+        run: |
+          for file in ./src/*.php; do
+            php -l "$file"
+          done
+
+#t-assert.neon analyse --no-interaction --no-progress .
