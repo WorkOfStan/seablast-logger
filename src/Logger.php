@@ -65,7 +65,7 @@ class Logger extends AbstractLogger implements LoggerInterface
     public function logAtLeastToLevel(int $newLevel)
     {
         if (!is_int($newLevel)) {
-            throw new \Exception('The variable $newLevel is not an integer.');
+            throw new \Psr\Log\InvalidArgumentException('The variable $newLevel is not an integer.');
         }
         $this->overrideLoggingLevel = (int) $newLevel;
     }
