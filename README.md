@@ -1,7 +1,7 @@
 # seablast-logger
-[PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger compliant with verbosity settings and Tracy\Log wrapper.
+[PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger compliant with verbosity settings and Tracy\Logger::log wrapper.
 
-(TODO: change composer.json and repo desc: PSR-3 compliant logger with Tracy logger wrapper ... add shiftable levels)
+(TODO: improve accordingly composer.json and repository description)
 
 By default it logs the following levels of information:
 - fatal
@@ -13,7 +13,7 @@ By default it logs the following levels of information:
 And ignores
 - speed
 
-The logging level can however be shifted, so that dev environment writes to log much more info than the application in the production environment.
+The logging level (verbosity) can however be shifted, so that dev environment writes to log much more info than the application in the production environment.
 
 Following things may be configured when instatiating:
 ```php
