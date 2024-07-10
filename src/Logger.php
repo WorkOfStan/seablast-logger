@@ -51,6 +51,9 @@ class Logger extends AbstractLogger implements LoggerInterface
             ),
             $conf
         );
+        if (!is_int($this->conf['logging_level'])) {
+            throw new \Psr\Log\InvalidArgumentException('The logging_level is not an integer.');
+        }
         $this->overrideLoggingLevel = $this->conf['logging_level'];
         //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
         //240709 set later is probably not necessary 
