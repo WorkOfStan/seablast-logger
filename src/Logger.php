@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 /**
  * TODO wrapper in backyard adds $RUNNING_TIME = $this->getLastRunningTime();
  * TODO - KEEP dieGraciously
+ * TODO - only log calls Seablast\Logger\Logger and catches ErrorLogFailureException('error_log() => return false
  */
 class Logger extends AbstractLogger implements LoggerInterface
 {
@@ -94,11 +95,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function emergency($message, array $context = array())
     {
-        return $this->log(0, $message, $context);
+        $this->log(0, $message, $context);
     }
 
     /**
@@ -109,11 +110,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function alert($message, array $context = array())
     {
-        return $this->log(1, $message, $context);
+        $this->log(1, $message, $context);
     }
 
     /**
@@ -123,11 +124,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function critical($message, array $context = array())
     {
-        return $this->log(1, $message, $context);
+        $this->log(1, $message, $context);
     }
 
     /**
@@ -136,11 +137,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function error($message, array $context = array())
     {
-        return $this->log(2, $message, $context);
+        $this->log(2, $message, $context);
     }
 
     /**
@@ -151,11 +152,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function warning($message, array $context = array())
     {
-        return $this->log(3, $message, $context);
+        $this->log(3, $message, $context);
     }
 
     /**
@@ -163,11 +164,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function notice($message, array $context = array())
     {
-        return $this->log(4, $message, $context);
+        $this->log(4, $message, $context);
     }
 
     /**
@@ -177,11 +178,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function info($message, array $context = array())
     {
-        return $this->log(4, $message, $context);
+        $this->log(4, $message, $context);
     }
 
     /**
@@ -189,11 +190,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
-     * @return bool
+     * @return void
      */
     public function debug($message, array $context = array())
     {
-        return $this->log(5, $message, $context);
+        $this->log(5, $message, $context);
     }
 
     /**
@@ -209,7 +210,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param string $message Message to be logged
      * @param array<int> $context OPTIONAL To enable error log filtering 'error_number' field expected or the first element element expected containing number of error category
      *
-     * @return bool
+     * @return void
      *
      * <b>ERROR NUMBER LIST</b>
      *  0 Unspecified<br/>
@@ -299,7 +300,10 @@ class Logger extends AbstractLogger implements LoggerInterface
                 error_log($message_prefix . $message . PHP_EOL, 1, $this->conf['mail_for_admin_enabled']);
             }
         }
-        return $result;
+        if ($result === false) {
+            throw new ErrorLogFailureException('error_log() failed');
+        }
+        //return $result;
     }
     /* Alternative way:
       Logging levels
