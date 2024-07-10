@@ -100,7 +100,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function emergency($message, array $context = array())
+    public function emergency($message, array $context = array()): void
     {
         $this->log(0, $message, $context);
     }
