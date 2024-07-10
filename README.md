@@ -1,7 +1,7 @@
 # seablast-logger
-Logger compliant with PSR-3 http://www.php-fig.org/psr/psr-3/ and Tracy.
+[PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger compliant with verbosity settings and Tracy\Log wrapper.
 
-(TODO: PSR-3 compliant logger with Tracy logger wrapper ... add shiftable levels)
+(TODO: change composer.json and repo desc: PSR-3 compliant logger with Tracy logger wrapper ... add shiftable levels)
 
 By default it logs the following levels of information:
 - fatal
