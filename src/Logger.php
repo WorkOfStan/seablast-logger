@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
  * TODO wrapper in backyard adds $RUNNING_TIME = $this->getLastRunningTime();
  * TODO - KEEP dieGraciously
  * TODO - only log calls Seablast\Logger\Logger and catches ErrorLogFailureException('error_log() => return false
+ * TODO - when adding PHP/8 support, add :void to the inherited methods and remove PHP/5 support
  */
 class Logger extends AbstractLogger implements LoggerInterface
 {
@@ -56,7 +57,7 @@ class Logger extends AbstractLogger implements LoggerInterface
         }
         $this->overrideLoggingLevel = $this->conf['logging_level'];
         //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
-        //240709 set later is probably not necessary 
+        //240709 set later is probably not necessary
     }
 
     /**
@@ -100,7 +101,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function emergency($message, array $context = array()): void
+    public function emergency($message, array $context = array())
     {
         $this->log(0, $message, $context);
     }
