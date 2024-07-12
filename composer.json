@@ -1,6 +1,6 @@
 {
     "name": "seablast/logger",
-    "description": "PSR-3 compliant logger with Tracy logger wrapper",
+    "description": "A PSR-3 compliant logger with adjustable verbosity.",
     "type": "library",
     "require": {
         "php": "^5.3 || ^7.0",

@@ -1,11 +1,35 @@
 # seablast-logger
-[PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger compliant with verbosity settings and Tracy\Logger::log wrapper.
+A [PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity.
 
-(TODO: improve accordingly composer.json and repository description)
+The logging levels can be tailored to suit different environments.
+For instance, in a development environment, the logger can be configured to log more detailed information compared to a production environment, all without changing your code.
+Simply adjust the verbosity.
 
+The `logging_level` is the most important setting. These parameters can be configured when instantiating the logger:
+```php
+$conf = array(
+    // 0 = send message to PHP's system logger; recommended is however 3, i.e. append to the file destination set in the field 'logging_file'
+    'error_log_message_type' => 0,
+    // if error_log_message_type equals 3, the message is appended to this file destination (path and name)
+    'logging_file' => '',
+    // log up to the level set here, default=5 = debug
+    'logging_level' => 5,
+    // rename or renumber, if needed
+    'logging_level_name' => array(0 => 'unknown', 1 => 'fatal', 'error', 'warning', 'info', 'debug', 'speed'),
+    // the logging level to which the page generation speed (i.e. error_number 6) is to be logged
+    'logging_level_page_speed' => 5,
+    // false => use logging_file with log extension as destination; true => adds .Y-m.log to the logging file
+    'log_monthly_rotation' => true,
+    // prefix message that took longer than profiling step (float) sec from the previous one by SLOWSTEP
+    'log_profiling_step' => false,
+    // fatal error may just be written in log, on production, it is however recommended to set an e-mail, where to announce fatal errors
+    'mail_for_admin_enabled' => false,
+);
+$logger = new Seablast\Logger\Logger($conf);
+```
 See [test.php](test.php) for usage.
 
-By default it logs the following levels of information:
+By default the logger logs the following levels of information:
 - fatal
 - error
 - warning
@@ -15,19 +39,16 @@ By default it logs the following levels of information:
 And ignores
 - speed
 
-The logging level (verbosity) can however be shifted, so that dev environment writes to log much more info than the application in the production environment.
+## Runtime adjustment
+- method logAtLeastToLevel(int $level) may change the verbosity level above the level set when instatiating.
+- method setUser(int|string $user) may add the user identification to the error messages
 
-Following things may be configured when instatiating:
+# Tracy\Logger::log wrapper
+Since Nette\Tracy::v2.6.0, i.e. `"php": ">=7.1"` it is possible to use a PSR-3 adapter, allowing for integration of [seablast/logger](https://github.com/WorkOfStan/seablast-logger).
+
 ```php
-$conf = array(
-                'logging_level' => 5, //log up to the level set here, default=5 = debug//logovat az do urovne zde uvedene: 0=unknown/default_call 1=fatal 2=error 3=warning 4=info 5=debug/default_setting 6=speed  //aby se zalogovala alespoň missing db musí být logování nejníže defaultně na 1 //1 as default for writing the missing db at least to the standard ErrorLog
-                'logging_level_name' => array(0 => 'unknown', 1 => 'fatal', 'error', 'warning', 'info', 'debug', 'speed'),
-                'logging_file' => '', //soubor, do kterého má my_error_log() zapisovat
-                'logging_level_page_speed' => 5, //úroveň logování, do které má být zapisována rychlost vygenerování stránky
-                'error_log_message_type' => 0, //parameter message_type http://cz2.php.net/manual/en/function.error-log.php for my_error_log; default is 0, i.e. to send message to PHP's system logger; recommended is however 3, i.e. append to the file destination set either in field $this->conf['logging_file or in table system
-                'mail_for_admin_enabled' => false, //fatal error may just be written in log //$backyardMailForAdminEnabled = "rejthar@gods.cz";//on production, it is however recommended to set an e-mail, where to announce fatal errors
-                'log_monthly_rotation' => true, //true, pokud má být přípona .log.Y-m.log (výhodou je měsíční rotace); false, pokud má být jen .log (výhodou je sekvenční zápis chyb přes my_error_log a jiných PHP chyb)
-                'log_standard_output' => false, //true, pokud má zároveň vypisovat na obrazovku; false, pokud má vypisovat jen do logu
-                'log_profiling_step' => false, //110812, my_error_log neprofiluje rychlost //$PROFILING_STEP = 0.008;//110812, my_error_log profiluje čas mezi dvěma měřenými body vyšší než udaná hodnota sec
-);
+$logger = new Seablast\Logger\Logger();
+$tracyLogger = new Tracy\Bridges\Psr\PsrToTracyLoggerAdapter($logger);
+Debugger::setLogger($tracyLogger);
+Debugger::enable();
 ```
