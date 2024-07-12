@@ -6,21 +6,22 @@ require 'vendor/autoload.php';
 $conf = array(
     'error_log_message_type' => 3,
     'logging_file' => './error_log',
-    'logging_level' => 0, // for purpose of test looping
+    'logging_level' => 0, // start with logging almost nothing for purpose of test looping
     'logging_level_page_speed' => 5,
     'log_monthly_rotation' => true,
     'log_profiling_step' => 0.001,
-    'mail_for_admin_enabled' => false,
+    'mail_for_admin_enabled' => true,
 );
 $logger = new Seablast\Logger\Logger($conf);
 
+$severities = array('emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug');
 // Loop through levels 1 to 5
 for ($level = 1; $level <= 5; $level++) {
     // Set the logging level
     echo "<h1>logAtLeastToLevel($level)</h1>";
     $logger->logAtLeastToLevel($level);
 
-    foreach (['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'] as $severity) {
+    foreach ($severities as $severity) {
         // Display all severities
         echo $severity . '<br>';
 
