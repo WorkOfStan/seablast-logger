@@ -43,7 +43,7 @@ And ignores
 - method logAtLeastToLevel(int $level) may change the verbosity level above the level set when instatiating.
 - method setUser(int|string $user) may add the user identification to the error messages
 
-# Tracy\Logger::log wrapper
+## Tracy\Logger::log wrapper
 Since Nette\Tracy::v2.6.0, i.e. `"php": ">=7.1"` it is possible to use a PSR-3 adapter, allowing for integration of [seablast/logger](https://github.com/WorkOfStan/seablast-logger).
 
 ```php
