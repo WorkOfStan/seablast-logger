@@ -3,6 +3,8 @@
 
 (TODO: improve accordingly composer.json and repository description)
 
+See [test.php](test.php) for usage.
+
 By default it logs the following levels of information:
 - fatal
 - error

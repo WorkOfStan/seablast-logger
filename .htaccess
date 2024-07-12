@@ -3,6 +3,7 @@
 RedirectMatch 404 /\.git
 RedirectMatch 404 phpstan\.neon\.dist
 RedirectMatch 404 phpunit\.xml
+RedirectMatch 404 \.log$
 RedirectMatch 404 \.md$
 RedirectMatch 404 \.neon$
 RedirectMatch 404 \.sh$
