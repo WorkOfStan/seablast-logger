@@ -1,0 +1,32 @@
+{
+    "name": "seablast/logger",
+    "description": "A PSR-3 compliant logger with adjustable verbosity.",
+    "type": "library",
+    "require": {
+        "php": "^5.3 || ^7.0",
+        "psr/log": "^1.0 || ^2.0 || ^3.0",
+        "tracy/tracy": "^2.3.12"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stanislav Rejthar",
+            "email": "rejthar@stanislavrejthar.com"
+        }
+    ],
+    "support": {
+        "email": "rejthar@stanislavrejthar.com",
+        "issues": "https://github.com/WorkOfStan/seablast-logger/issues",
+        "source": "https://github.com/WorkOfStan/seablast-logger"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Seablast\\Logger\\": ["src/"]
+        }
+    }
+}

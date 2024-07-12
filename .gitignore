@@ -1,0 +1,11 @@
+#disable temporary and log files and dirs
+*.log
+
+#disable composer-managed libraries
+/vendor/
+#disable composer lock file
+/composer.lock
+
+#disable IDE files
+/nbproject/
+/.idea/
