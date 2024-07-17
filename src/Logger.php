@@ -4,6 +4,7 @@ namespace Seablast\Logger;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Seablast\Logger\LoggerTime;
 
 /**
@@ -223,7 +224,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * Logs with an arbitrary level, i.e. may not log debug info on production.
      * Compliant with PSR-3 http://www.php-fig.org/psr/psr-3/
      *
-     * @param int $level Error level
+     * @param mixed int|string $level Error level
      * @param string $message Message to be logged
      * @param array<int> $context OPTIONAL To enable error log filtering 'error_number' field expected or the first element element expected containing number of error category
      *
@@ -257,6 +258,30 @@ class Logger extends AbstractLogger implements LoggerInterface
         //TODO: přidat proměnnou $line - mělo by být vždy voláno jako basename(__FILE__)."#".__LINE__ , takže bude jasné, ze které řádky source souboru to bylo voláno
         // Ve výsledku do logu zapíše:
         //[Timestamp: d-M-Y H:i:s] [Logging level] [$error_number] [$_SERVER['SCRIPT_FILENAME']] [username@gethostbyaddr($_SERVER['REMOTE_ADDR'])] [sec od startu stránky] $message
+
+        // psr log levels to numbered severity
+        $psr2int = [
+            LogLevel::EMERGENCY => 0,
+            LogLevel::ALERT     => 1,
+            LogLevel::CRITICAL  => 1,
+            LogLevel::ERROR     => 2,
+            LogLevel::WARNING   => 3,
+            LogLevel::NOTICE    => 4,
+            LogLevel::INFO      => 4,
+            LogLevel::DEBUG     => 5,
+        ];
+        if (is_string($level)) {
+            if (array_key_exist($level, $psr2int)) {
+                $level =  $psr2int[$level];
+            } else {
+                error_log('level has unexpected string value ' . $level);
+                $level = 0;
+            }
+        }
+        if (!is_int($level)) {
+            error_log('level has unexpected type ' . gettype($level));
+            $level = 0;
+        }
 
         if (!is_string($message)) {
             error_log("wrong message: Logger->log({$level}," . print_r($message, true) . ")");
