@@ -18,6 +18,16 @@ class Logger extends AbstractLogger implements LoggerInterface
 {
 // phpcs:disable Generic.Files.LineLength
 
+    // Define constants for configuration keys
+    const CONF_ERROR_LOG_MESSAGE_TYPE = 'error_log_message_type';
+    const CONF_LOGGING_FILE = 'logging_file';
+    const CONF_LOGGING_LEVEL = 'logging_level';
+    const CONF_LOGGING_LEVEL_NAME = 'logging_level_name';
+    const CONF_LOGGING_LEVEL_PAGE_SPEED = 'logging_level_page_speed';
+    const CONF_LOG_MONTHLY_ROTATION = 'log_monthly_rotation';
+    const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
+    const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
+    
     /** @var array<mixed> int,string,bool,array */
     protected $conf = array();
     /** @var int */
