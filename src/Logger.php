@@ -51,13 +51,13 @@ class Logger extends AbstractLogger implements LoggerInterface
             array( // default values
                 // 0 = send message to PHP's system logger;
                 // recommended is however 3, i.e. append to the file destination set in the field 'logging_file'
-                'error_log_message_type' => 0,
+                self::CONF_ERROR_LOG_MESSAGE_TYPE => 0,
                 // if error_log_message_type equals 3, the message is appended to this file destination (path and name)
-                'logging_file' => '',
+                self::CONF_LOGGING_FILE => '',
                 // log up to the level set here, default=5 = debug
-                'logging_level' => 5,
+                self::CONF_LOGGING_LEVEL => 5,
                 // rename or renumber, if needed
-                'logging_level_name' => array(
+                self::CONF_LOGGING_LEVEL_NAME => array(
                     0 => 'unknown',
                     1 => 'fatal',
                     'error',
@@ -67,23 +67,23 @@ class Logger extends AbstractLogger implements LoggerInterface
                     'speed'
                 ),
                 // the logging level to which the page generation speed (i.e. error_number 6) is to be logged
-                'logging_level_page_speed' => 5,
+                self::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
                 // false => use logging_file with log extension as destination
                 // true => adds .Y-m.log to the logging file
-                'log_monthly_rotation' => true,
+                self::CONF_LOG_MONTHLY_ROTATION => true,
                 // prefix message that took longer than profiling step (float) sec from the previous one by SLOWSTEP
-                'log_profiling_step' => false,
+                self::CONF_LOG_PROFILING_STEP => false,
                 // UNCOMMENT only if needed //'log_standard_output' => false, //true, pokud má zároveň vypisovat na obrazovku; false, pokud má vypisovat jen do logu
                 // fatal error may just be written in log,
                 // on production, it is however recommended to set an e-mail, where to announce fatal errors
-                'mail_for_admin_enabled' => false,
+                self::CONF_MAIL_FOR_ADMIN_ENABLED => false,
             ),
             $conf
         );
-        if (!is_int($this->conf['logging_level'])) {
+        if (!is_int($this->conf[self::CONF_LOGGING_LEVEL])) {
             throw new \Psr\Log\InvalidArgumentException('The logging_level is not an integer.');
         }
-        $this->overrideLoggingLevel = $this->conf['logging_level'];
+        $this->overrideLoggingLevel = $this->conf[self::CONF_LOGGING_LEVEL];
         //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
         //240709 set later is probably not necessary
     }
@@ -309,7 +309,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             (
                 $level <= max(
                     array(
-                        $this->conf['logging_level'],
+                        $this->conf[self::CONF_LOGGING_LEVEL],
                         $this->overrideLoggingLevel,
                         // $this->conf['error_hack_from_get'], //set potentially as GET parameter
                         //  $ERROR_HACK, //set as variable in the application script
@@ -318,7 +318,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             )
             // or log page_speed everytime error_number equals 6 and
             // logging_level_page_speed has at least the severity of logging_level
-            || (($error_number === 6) && ($this->conf['logging_level_page_speed'] <= $this->conf['logging_level']))
+            || (($error_number === 6) && ($this->conf['logging_level_page_speed'] <= $this->conf[self::CONF_LOGGING_LEVEL]))
         ) {
             $RUNNING_TIME_PREVIOUS = $this->runningTime;
             if (((($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4)) - $RUNNING_TIME_PREVIOUS) > $this->conf['log_profiling_step']) && $this->conf['log_profiling_step']) {
