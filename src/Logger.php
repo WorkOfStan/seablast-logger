@@ -314,10 +314,10 @@ class Logger extends AbstractLogger implements LoggerInterface
             )
             // or log page_speed everytime error_number equals 6 and
             // logging_level_page_speed has at least the severity of logging_level
-            || (($error_number === 6) && ($this->conf['logging_level_page_speed'] <= $this->conf[self::CONF_LOGGING_LEVEL]))
+            || (($error_number === 6) && ($this->conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] <= $this->conf[self::CONF_LOGGING_LEVEL]))
         ) {
             $RUNNING_TIME_PREVIOUS = $this->runningTime;
-            if (((($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4)) - $RUNNING_TIME_PREVIOUS) > $this->conf['log_profiling_step']) && $this->conf['log_profiling_step']) {
+            if (((($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4)) - $RUNNING_TIME_PREVIOUS) > $this->conf[self::CONF_LOG_PROFILING_STEP]) && $this->conf[self::CONF_LOG_PROFILING_STEP]) {
                 $message = "SLOWSTEP " . $message; //110812, PROFILING
             }
 
@@ -326,24 +326,25 @@ class Logger extends AbstractLogger implements LoggerInterface
             //    echo((($level <= 2) ? "<b>" : "") . "{$message} [{$this->runningTime}]" . (($level <= 2) ? "</b>" : "") . "<hr/>" . PHP_EOL); //110811, if fatal or error then bold//111119, RUNNING_TIME
             //}
 
-            $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf['logging_level_name'][$level] . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
+            $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level] . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
                 . $this->user . "@"
                 . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')//PHPUnit test (CLI) does not set REMOTE_ADDR
                 . "] [" . $this->runningTime . "] ["
                 . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')//PHPUnit test (CLI) does not set REQUEST_URI
                 . "] ";
             //gethostbyaddr($_SERVER['REMOTE_ADDR'])// co udělá s IP, která nelze přeložit? nebylo by lepší logovat přímo IP?
-            if (($this->conf['error_log_message_type'] == 3) && !$this->conf['logging_file']) {// $logging_file not set and it should be
+            if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {// $logging_file not set and it should be
                 $result = error_log($message_prefix . "(error: logging_file should be set!) $message"); // so write into the default destination
                 //zaroven by mohlo poslat mail nebo tak neco .. vypis na obrazovku je asi az krajni reseni
             } else {
-                $messageType = ($this->conf['error_log_message_type'] == 0) ? $this->conf['error_log_message_type'] : 3;
-                $result = ($this->conf['log_monthly_rotation']) ? error_log($message_prefix . $message . (($messageType != 0) ? (PHP_EOL) : ('')), $messageType, "{$this->conf['logging_file']}." . date("Y-m") . ".log") //writes into a monthly rotating file
-                    : error_log($message_prefix . $message . PHP_EOL, $messageType, "{$this->conf['logging_file']}.log"); //writes into one file
+                $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 0) ? $this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] : 3;
+                $result = ($this->conf[self::CONF_LOG_MONTHLY_ROTATION])
+                    ? error_log($message_prefix . $message . (($messageType != 0) ? (PHP_EOL) : ('')), $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}." . date("Y-m") . ".log") //writes into a monthly rotating file
+                    : error_log($message_prefix . $message . PHP_EOL, $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}.log"); //writes into one file
             }
             // mailto admin. 'mail_for_admin_enabled' has to be an email
-            if ($level == 1 && $this->conf['mail_for_admin_enabled']) {
-                error_log($message_prefix . $message . PHP_EOL, 1, $this->conf['mail_for_admin_enabled']);
+            if ($level == 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]) {
+                error_log($message_prefix . $message . PHP_EOL, 1, $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]);
             }
         }
         if ($result === false) {
