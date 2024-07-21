@@ -19,14 +19,14 @@ class Logger extends AbstractLogger implements LoggerInterface
 // phpcs:disable Generic.Files.LineLength
 
     // Define constants for configuration keys
-    const CONF_ERROR_LOG_MESSAGE_TYPE = 'error_log_message_type';
-    const CONF_LOGGING_FILE = 'logging_file';
-    const CONF_LOGGING_LEVEL = 'logging_level';
-    const CONF_LOGGING_LEVEL_NAME = 'logging_level_name';
-    const CONF_LOGGING_LEVEL_PAGE_SPEED = 'logging_level_page_speed';
-    const CONF_LOG_MONTHLY_ROTATION = 'log_monthly_rotation';
-    const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
-    const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
+    public const CONF_ERROR_LOG_MESSAGE_TYPE = 'error_log_message_type';
+    public const CONF_LOGGING_FILE = 'logging_file';
+    public const CONF_LOGGING_LEVEL = 'logging_level';
+    public const CONF_LOGGING_LEVEL_NAME = 'logging_level_name';
+    public const CONF_LOGGING_LEVEL_PAGE_SPEED = 'logging_level_page_speed';
+    public const CONF_LOG_MONTHLY_ROTATION = 'log_monthly_rotation';
+    public const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
+    public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
     
     /** @var array<mixed> int,string,bool,array */
     protected $conf = array();
@@ -231,10 +231,10 @@ class Logger extends AbstractLogger implements LoggerInterface
 
     /**
      * Error_log() modified to log necessary debug information by application to its own log.
-     * Logs with an arbitrary level, i.e. may not log debug info on production.
+     * Logs with an arbitrary verbosity level, i.e. may not log debug info on production.
      * Compliant with PSR-3 http://www.php-fig.org/psr/psr-3/
      *
-     * @param mixed int|string $level Error level
+     * @param mixed $level int|string Error level
      * @param string $message Message to be logged
      * @param array<int> $context OPTIONAL To enable error log filtering 'error_number' field expected or the first element element expected containing number of error category
      *
@@ -284,7 +284,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             LogLevel::DEBUG     => 5,
         ];
         if (is_string($level)) {
-            if (array_key_exist($level, $psr2int)) {
+            if (array_key_exists($level, $psr2int)) {
                 $level = $psr2int[$level];
             } else {
                 $this->error('level has unexpected string value ' . $level . ' message: ' . $message);
