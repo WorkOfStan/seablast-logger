@@ -268,7 +268,10 @@ class Logger extends AbstractLogger implements LoggerInterface
         //TODO: přidat proměnnou $line - mělo by být vždy voláno jako basename(__FILE__)."#".__LINE__ , takže bude jasné, ze které řádky source souboru to bylo voláno
         // Ve výsledku do logu zapíše:
         //[Timestamp: d-M-Y H:i:s] [Logging level] [$error_number] [$_SERVER['SCRIPT_FILENAME']] [username@gethostbyaddr($_SERVER['REMOTE_ADDR'])] [sec od startu stránky] $message
-
+        if (!is_string($message)) {
+            $message = "wrong message type " . gettype($message) . ": Logger->log({$level}," . print_r($message, true) . ")";
+            $this->error($message);
+        }
         // psr log levels to numbered severity
         $psr2int = [
             LogLevel::EMERGENCY => 0,
@@ -282,19 +285,14 @@ class Logger extends AbstractLogger implements LoggerInterface
         ];
         if (is_string($level)) {
             if (array_key_exist($level, $psr2int)) {
-                $level =  $psr2int[$level];
+                $level = $psr2int[$level];
             } else {
-                error_log('level has unexpected string value ' . $level);
+                $this->error('level has unexpected string value ' . $level . ' message: ' . $message);
                 $level = 0;
             }
-        }
-        if (!is_int($level)) {
-            error_log('level has unexpected type ' . gettype($level));
+        } elseif (!is_int($level)) {
+            $this->error('level has unexpected type ' . gettype($level) . ' message: ' . $message);
             $level = 0;
-        }
-
-        if (!is_string($message)) {
-            error_log("wrong message: Logger->log({$level}," . print_r($message, true) . ")");
         }
 
         // if context array is set then get the value of the 'error_number' field or the first element
@@ -311,8 +309,6 @@ class Logger extends AbstractLogger implements LoggerInterface
                     array(
                         $this->conf[self::CONF_LOGGING_LEVEL],
                         $this->overrideLoggingLevel,
-                        // $this->conf['error_hack_from_get'], //set potentially as GET parameter
-                        //  $ERROR_HACK, //set as variable in the application script
                     )
                 )
             )
