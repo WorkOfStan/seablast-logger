@@ -17,7 +17,7 @@ use Seablast\Logger\LoggerTime;
 class Logger extends AbstractLogger implements LoggerInterface
 {
     // Define constants for configuration keys
-    // phpcs:disable SlevomatCodingStandard.Classes.ClassConstantVisibility.MissingVisibility
+    // phpcs:disable PSR12.Properties.ConstantVisibility.NotFound
     // todo remove phpcs exception when PHP/5 support removed
     const CONF_ERROR_LOG_MESSAGE_TYPE = 'error_log_message_type';
     const CONF_LOGGING_FILE = 'logging_file';
