@@ -271,11 +271,11 @@ class Logger extends AbstractLogger implements LoggerInterface
         // Ve výsledku do logu zapíše:
         //[Timestamp: d-M-Y H:i:s] [Logging level] [$error_number] [$_SERVER['SCRIPT_FILENAME']] [username@gethostbyaddr($_SERVER['REMOTE_ADDR'])] [sec od startu stránky] $message
         if (!is_string($message)) {
-            $message = "wrong message type " . gettype($message) . ": Logger->log({$level}," . print_r($message, true) . ")";
+            $message = "wrong message type " . gettype($message) . ": Logger->log(" . print_r($level, true) . "," . print_r($message, true) . ")";
             $this->error($message);
         }
         // psr log levels to numbered severity
-        $psr2int = [
+        $psr2int = array(
             LogLevel::EMERGENCY => 0,
             LogLevel::ALERT     => 1,
             LogLevel::CRITICAL  => 1,
@@ -284,7 +284,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             LogLevel::NOTICE    => 4,
             LogLevel::INFO      => 4,
             LogLevel::DEBUG     => 5,
-        ];
+        );
         if (is_string($level)) {
             if (array_key_exists($level, $psr2int)) {
                 $level = $psr2int[$level];
