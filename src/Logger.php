@@ -12,22 +12,23 @@ use Seablast\Logger\LoggerTime;
  * - add $RUNNING_TIME = $this->getLastRunningTime();
  * - KEEP dieGraciously
  * - only log calls Seablast\Logger\Logger and catches ErrorLogFailureException('error_log() => return false
- * - when adding PHP/8 support, add :void to the inherited methods and remove PHP/5 support
+ * TODO when adding PHP/8 support, add :void to the inherited methods and remove PHP/5 support
  */
 class Logger extends AbstractLogger implements LoggerInterface
 {
-// phpcs:disable Generic.Files.LineLength
-
     // Define constants for configuration keys
-    public const CONF_ERROR_LOG_MESSAGE_TYPE = 'error_log_message_type';
-    public const CONF_LOGGING_FILE = 'logging_file';
-    public const CONF_LOGGING_LEVEL = 'logging_level';
-    public const CONF_LOGGING_LEVEL_NAME = 'logging_level_name';
-    public const CONF_LOGGING_LEVEL_PAGE_SPEED = 'logging_level_page_speed';
-    public const CONF_LOG_MONTHLY_ROTATION = 'log_monthly_rotation';
-    public const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
-    public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
-    
+    // phpcs:disable SlevomatCodingStandard.Classes.ClassConstantVisibility.MissingVisibility
+    // todo remove phpcs exception when PHP/5 support removed
+    const CONF_ERROR_LOG_MESSAGE_TYPE = 'error_log_message_type';
+    const CONF_LOGGING_FILE = 'logging_file';
+    const CONF_LOGGING_LEVEL = 'logging_level';
+    const CONF_LOGGING_LEVEL_NAME = 'logging_level_name';
+    const CONF_LOGGING_LEVEL_PAGE_SPEED = 'logging_level_page_speed';
+    const CONF_LOG_MONTHLY_ROTATION = 'log_monthly_rotation';
+    const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
+    const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
+    // phpcs:enable
+
     /** @var array<mixed> int,string,bool,array */
     protected $conf = array();
     /** @var int */
@@ -38,6 +39,7 @@ class Logger extends AbstractLogger implements LoggerInterface
     protected $time;
     /** @var string*/
     private $user = 'unidentified';
+    // phpcs:disable Generic.Files.LineLength
 
     /**
      *
@@ -81,7 +83,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             $conf
         );
         if (!is_int($this->conf[self::CONF_LOGGING_LEVEL])) {
-            throw new \Psr\Log\InvalidArgumentException('The logging_level is not an integer.');
+            throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
         }
         $this->overrideLoggingLevel = $this->conf[self::CONF_LOGGING_LEVEL];
         //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
@@ -231,7 +233,7 @@ class Logger extends AbstractLogger implements LoggerInterface
 
     /**
      * Error_log() modified to log necessary debug information by application to its own log.
-     * Logs with an arbitrary verbosity level, i.e. may not log debug info on production.
+     * Logs with an arbitrary verbosity level, e.g. debug info on production may be omitted.
      * Compliant with PSR-3 http://www.php-fig.org/psr/psr-3/
      *
      * @param mixed $level int|string Error level
