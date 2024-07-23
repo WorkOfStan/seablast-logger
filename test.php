@@ -1,18 +1,20 @@
 <?php
 
+use Seablast\Logger\Logger;
+
 require 'vendor/autoload.php';
 
 // Initialize the logger
 $conf = array(
-    'error_log_message_type' => 3,
-    'logging_file' => './error_log',
-    'logging_level' => 0, // start with logging almost nothing for purpose of test looping
-    'logging_level_page_speed' => 5,
-    'log_monthly_rotation' => true,
-    'log_profiling_step' => 0.001,
-    'mail_for_admin_enabled' => true,
+    Logger::CONF_ERROR_LOG_MESSAGE_TYPE => 3,
+    Logger::CONF_LOGGING_FILE => './error_log', // extension .log will be added automatically
+    Logger::CONF_LOGGING_LEVEL => 0, // start with logging almost nothing for purpose of test looping
+    Logger::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
+    Logger::CONF_LOG_MONTHLY_ROTATION => true,
+    Logger::CONF_LOG_PROFILING_STEP => 0.00048,
+    Logger::CONF_MAIL_FOR_ADMIN_ENABLED => false,
 );
-$logger = new Seablast\Logger\Logger($conf);
+$logger = new Logger($conf);
 
 $severities = array('emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug');
 // Loop through levels 1 to 5

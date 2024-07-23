@@ -39,7 +39,6 @@ class Logger extends AbstractLogger implements LoggerInterface
     protected $time;
     /** @var string*/
     private $user = 'unidentified';
-    // phpcs:disable Generic.Files.LineLength
 
     /**
      *
@@ -56,7 +55,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 self::CONF_ERROR_LOG_MESSAGE_TYPE => 0,
                 // if error_log_message_type equals 3, the message is appended to this file destination (path and name)
                 self::CONF_LOGGING_FILE => '',
-                // log up to the level set here, default=5 = debug
+                // verbosity: log up to the level set here, default=5 = debug
                 self::CONF_LOGGING_LEVEL => 5,
                 // rename or renumber, if needed
                 self::CONF_LOGGING_LEVEL_NAME => array(
@@ -75,7 +74,8 @@ class Logger extends AbstractLogger implements LoggerInterface
                 self::CONF_LOG_MONTHLY_ROTATION => true,
                 // prefix message that took longer than profiling step (float) sec from the previous one by SLOWSTEP
                 self::CONF_LOG_PROFILING_STEP => false,
-                // UNCOMMENT only if needed //'log_standard_output' => false, //true, pokud má zároveň vypisovat na obrazovku; false, pokud má vypisovat jen do logu
+                // UNCOMMENT only if needed //'log_standard_output' => false,
+                // //true, pokud má zároveň vypisovat na obrazovku; false, pokud má vypisovat jen do logu
                 // fatal error may just be written in log,
                 // on production, it is however recommended to set an e-mail, where to announce fatal errors
                 self::CONF_MAIL_FOR_ADMIN_ENABLED => false,
@@ -86,12 +86,12 @@ class Logger extends AbstractLogger implements LoggerInterface
             throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
         }
         $this->overrideLoggingLevel = $this->conf[self::CONF_LOGGING_LEVEL];
-        //@todo do not use $this->conf but set the class properties right here accordingly; and also provide means to set the values otherwise later
-        //240709 set later is probably not necessary
+        //@todo replace $this->conf by the class properties
     }
 
     /**
-     * Class doesn't automatically use any GET parameter to override the set logging level, as it could be used to flood the error log.
+     * Class doesn't automatically use any GET parameter to override the set logging level,
+     * as it could be used to flood the error log.
      * It is however possible to programmatically raise the logging level set in configuration.
      *
      * @param int $newLevel
@@ -231,6 +231,7 @@ class Logger extends AbstractLogger implements LoggerInterface
         $this->log(5, $message, $context);
     }
 
+    // phpcs:disable Generic.Files.LineLength
     /**
      * Error_log() modified to log necessary debug information by application to its own log.
      * Logs with an arbitrary verbosity level, e.g. debug info on production may be omitted.
@@ -353,6 +354,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             throw new ErrorLogFailureException('error_log() failed');
         }
     }
+    // phpcs:enable
     /** Alternative way:
       Logging levels
       Log level   Description                                                                       Set bit
@@ -370,5 +372,4 @@ class Logger extends AbstractLogger implements LoggerInterface
       4         00000100  Warnings and Trace
       7         00000111  Warnings, Debug, Information and Trace
      */
-    // phpcs:enable
 }
