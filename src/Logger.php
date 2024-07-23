@@ -8,10 +8,6 @@ use Psr\Log\LogLevel;
 use Seablast\Logger\LoggerTime;
 
 /**
- * TODO wrapper in backyard
- * - add $RUNNING_TIME = $this->getLastRunningTime();
- * - KEEP dieGraciously
- * - only log calls Seablast\Logger\Logger and catches ErrorLogFailureException('error_log() => return false
  * TODO when adding PHP/8 support, add :void to the inherited methods and remove PHP/5 support
  */
 class Logger extends AbstractLogger implements LoggerInterface
@@ -231,15 +227,19 @@ class Logger extends AbstractLogger implements LoggerInterface
         $this->log(5, $message, $context);
     }
 
-    // phpcs:disable Generic.Files.LineLength
     /**
      * Error_log() modified to log necessary debug information by application to its own log.
      * Logs with an arbitrary verbosity level, e.g. debug info on production may be omitted.
      * Compliant with PSR-3 http://www.php-fig.org/psr/psr-3/
      *
+     * Following gets written to log:
+     * [Timestamp: d-M-Y H:i:s] [Logging level] [$error_number] [$_SERVER['SCRIPT_FILENAME']]
+     * [username@gethostbyaddr($_SERVER['REMOTE_ADDR'])] [sec since page start] $message
+     *
      * @param mixed $level int|string Error level
      * @param string $message Message to be logged
-     * @param array<int> $context OPTIONAL To enable error log filtering 'error_number' field expected or the first element element expected containing number of error category
+     * @param array<int> $context OPTIONAL To enable error log filtering 'error_number' field expected
+     *   or the first element element expected containing number of error category
      *
      * @return void
      *
@@ -268,11 +268,11 @@ class Logger extends AbstractLogger implements LoggerInterface
      */
     public function log($level, $message, array $context = array())
     {
-        //TODO: přidat proměnnou $line - mělo by být vždy voláno jako basename(__FILE__)."#".__LINE__ , takže bude jasné, ze které řádky source souboru to bylo voláno
-        // Ve výsledku do logu zapíše:
-        //[Timestamp: d-M-Y H:i:s] [Logging level] [$error_number] [$_SERVER['SCRIPT_FILENAME']] [username@gethostbyaddr($_SERVER['REMOTE_ADDR'])] [sec od startu stránky] $message
+        //TODO add variable $line - it should always be called as basename(__FILE__)."#".__LINE__ ,
+        //so it's clear which line of the source code triggered the call
         if (!is_string($message)) {
-            $message = "wrong message type " . gettype($message) . ": Logger->log(" . print_r($level, true) . "," . print_r($message, true) . ")";
+            $message = "wrong message type " . gettype($message) . ": Logger->log(" . print_r($level, true) . ","
+                . print_r($message, true) . ")";
             $this->error($message);
         }
         // psr log levels to numbered severity
@@ -317,8 +317,12 @@ class Logger extends AbstractLogger implements LoggerInterface
             )
             // or log page_speed everytime error_number equals 6 and
             // logging_level_page_speed has at least the severity of logging_level
-            || (($error_number === 6) && ($this->conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] <= $this->conf[self::CONF_LOGGING_LEVEL]))
+            || (
+                ($error_number === 6) &&
+                ($this->conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] <= $this->conf[self::CONF_LOGGING_LEVEL])
+            )
         ) {
+            // phpcs:disable Generic.Files.LineLength
             $RUNNING_TIME_PREVIOUS = $this->runningTime;
             if (((($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4)) - $RUNNING_TIME_PREVIOUS) > $this->conf[self::CONF_LOG_PROFILING_STEP]) && $this->conf[self::CONF_LOG_PROFILING_STEP]) {
                 $message = "SLOWSTEP " . $message; //110812, PROFILING
@@ -331,20 +335,23 @@ class Logger extends AbstractLogger implements LoggerInterface
 
             $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level] . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
                 . $this->user . "@"
-                . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')//PHPUnit test (CLI) does not set REMOTE_ADDR
+                // PHPUnit test (CLI) does not set REMOTE_ADDR
+                // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to log IP?
+                . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')
                 . "] [" . $this->runningTime . "] ["
-                . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')//PHPUnit test (CLI) does not set REQUEST_URI
+                // PHPUnit test (CLI) does not set REQUEST_URI
+                . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')
                 . "] ";
-            //gethostbyaddr($_SERVER['REMOTE_ADDR'])// co udělá s IP, která nelze přeložit? nebylo by lepší logovat přímo IP?
             if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {// $logging_file not set and it should be
                 $result = error_log($message_prefix . "(error: logging_file should be set!) $message"); // so write into the default destination
                 //zaroven by mohlo poslat mail nebo tak neco .. vypis na obrazovku je asi az krajni reseni
             } else {
                 $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 0) ? $this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] : 3;
                 $result = ($this->conf[self::CONF_LOG_MONTHLY_ROTATION])
-                    ? error_log($message_prefix . $message . (($messageType != 0) ? (PHP_EOL) : ('')), $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}." . date("Y-m") . ".log") //writes into a monthly rotating file
-                    : error_log($message_prefix . $message . PHP_EOL, $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}.log"); //writes into one file
+                    ? error_log($message_prefix . $message . (($messageType != 0) ? (PHP_EOL) : ('')), $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}." . date("Y-m") . ".log") // writes into a monthly rotating file
+                    : error_log($message_prefix . $message . PHP_EOL, $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}.log"); // writes into one file
             }
+            // phpcs:enable
             // mailto admin. 'mail_for_admin_enabled' has to be an email
             if ($level == 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]) {
                 error_log($message_prefix . $message . PHP_EOL, 1, $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]);
@@ -354,7 +361,6 @@ class Logger extends AbstractLogger implements LoggerInterface
             throw new ErrorLogFailureException('error_log() failed');
         }
     }
-    // phpcs:enable
     /** Alternative way:
       Logging levels
       Log level   Description                                                                       Set bit
