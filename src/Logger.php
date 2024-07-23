@@ -318,8 +318,8 @@ class Logger extends AbstractLogger implements LoggerInterface
             // or log page_speed everytime error_number equals 6 and
             // logging_level_page_speed has at least the severity of logging_level
             || (
-                ($error_number === 6) &&
-                ($this->conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] <= $this->conf[self::CONF_LOGGING_LEVEL])
+                ($error_number === 6)
+                && ($this->conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] <= $this->conf[self::CONF_LOGGING_LEVEL])
             )
         ) {
             // phpcs:disable Generic.Files.LineLength
