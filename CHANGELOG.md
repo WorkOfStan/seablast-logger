@@ -17,8 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [0.1] - 2024-07-12
-- A PSR-3 compliant logger with adjustable verbosity based on Backyard\BackyardError
+## [0.2] - 2024-07-23
+### Added
+- Class configuration is managed by an array where field names are defined as constants to enable IDE hints.
 
-[Unreleased]: https://github.com/WorkOfStan/seablast-dist/compare/v0.1...HEAD
-[0.1]: https://github.com/WorkOfStan/seablast-dist/releases/tag/v0.1
+### Fixed
+- argument `$level` of method `log` accepts also strings defined in Psr\Log\LogLevel as required by [PSR-3](https://www.php-fig.org/psr/psr-3/)
+
+## [0.1] - 2024-07-12
+- A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
+
+[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v0.2...HEAD
+[0.2]: https://github.com/WorkOfStan/seablast-logger/compare/v0.1...v0.2
+[0.1]: https://github.com/WorkOfStan/seablast-logger/releases/tag/v0.1
