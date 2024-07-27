@@ -8,7 +8,7 @@ use Psr\Log\LogLevel;
 use Seablast\Logger\LoggerTime;
 
 /**
- * TODO when adding PHP/8 support, add :void to the inherited methods and remove PHP/5 support
+ * A [PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity.
  */
 class Logger extends AbstractLogger implements LoggerInterface
 {
@@ -70,10 +70,8 @@ class Logger extends AbstractLogger implements LoggerInterface
                 self::CONF_LOG_MONTHLY_ROTATION => true,
                 // prefix message that took longer than profiling step (float) sec from the previous one by SLOWSTEP
                 self::CONF_LOG_PROFILING_STEP => false,
-                // UNCOMMENT only if needed //'log_standard_output' => false,
-                // //true, pokud má zároveň vypisovat na obrazovku; false, pokud má vypisovat jen do logu
-                // fatal error may just be written in log,
-                // on production, it is however recommended to set an e-mail, where to announce fatal errors
+                // A fatal error may be logged only.
+                // However, in production, set up an email address to enable error notifications.
                 self::CONF_MAIL_FOR_ADMIN_ENABLED => false,
             ),
             $conf
@@ -129,6 +127,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      */
     public function emergency($message, array $context = array())
     {
+        //TODO when adding PHP/8 support, add :void to the inherited methods and remove PHP/5 support
         $this->log(0, $message, $context);
     }
 
@@ -322,18 +321,17 @@ class Logger extends AbstractLogger implements LoggerInterface
                 && ($this->conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] <= $this->conf[self::CONF_LOGGING_LEVEL])
             )
         ) {
-            // phpcs:disable Generic.Files.LineLength
             $RUNNING_TIME_PREVIOUS = $this->runningTime;
-            if (((($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4)) - $RUNNING_TIME_PREVIOUS) > $this->conf[self::CONF_LOG_PROFILING_STEP]) && $this->conf[self::CONF_LOG_PROFILING_STEP]) {
+            if (
+                (
+                    (($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4))
+                    - $RUNNING_TIME_PREVIOUS) > $this->conf[self::CONF_LOG_PROFILING_STEP]
+                ) && $this->conf[self::CONF_LOG_PROFILING_STEP]) {
                 $message = "SLOWSTEP " . $message; //110812, PROFILING
             }
 
-            // UNCOMMENT only if needed, DELETE otherwise
-            //if ($this->conf['log_standard_output']) {
-            //    echo((($level <= 2) ? "<b>" : "") . "{$message} [{$this->runningTime}]" . (($level <= 2) ? "</b>" : "") . "<hr/>" . PHP_EOL); //110811, if fatal or error then bold//111119, RUNNING_TIME
-            //}
-
-            $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level] . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
+            $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level]
+                . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
                 . $this->user . "@"
                 // PHPUnit test (CLI) does not set REMOTE_ADDR
                 // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to log IP?
@@ -342,16 +340,25 @@ class Logger extends AbstractLogger implements LoggerInterface
                 // PHPUnit test (CLI) does not set REQUEST_URI
                 . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')
                 . "] ";
-            if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {// $logging_file not set and it should be
-                $result = error_log($message_prefix . "(error: logging_file should be set!) $message"); // so write into the default destination
-                //zaroven by mohlo poslat mail nebo tak neco .. vypis na obrazovku je asi az krajni reseni
+            // $logging_file not set and it should be
+            if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {
+                // so write into the default destination
+                $result = error_log($message_prefix . "(error: logging_file should be set!) $message");
             } else {
-                $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 0) ? $this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] : 3;
+                $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 0)
+                    ? $this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] : 3;
                 $result = ($this->conf[self::CONF_LOG_MONTHLY_ROTATION])
-                    ? error_log($message_prefix . $message . (($messageType != 0) ? (PHP_EOL) : ('')), $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}." . date("Y-m") . ".log") // writes into a monthly rotating file
-                    : error_log($message_prefix . $message . PHP_EOL, $messageType, "{$this->conf[self::CONF_LOGGING_FILE]}.log"); // writes into one file
+                    ? error_log(
+                        $message_prefix . $message . (($messageType != 0) ? (PHP_EOL) : ('')),
+                        $messageType,
+                        "{$this->conf[self::CONF_LOGGING_FILE]}." . date("Y-m") . ".log"
+                    ) // writes into a monthly rotating file
+                    : error_log(
+                        $message_prefix . $message . PHP_EOL,
+                        $messageType,
+                        "{$this->conf[self::CONF_LOGGING_FILE]}.log"
+                    ); // writes into one file
             }
-            // phpcs:enable
             // mailto admin. 'mail_for_admin_enabled' has to be an email
             if ($level == 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]) {
                 error_log($message_prefix . $message . PHP_EOL, 1, $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]);

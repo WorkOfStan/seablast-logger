@@ -41,6 +41,8 @@ By default the logger logs the following levels of information:
 And ignores
 - speed
 
+Note: Outputting log messages to the screen is not supported.
+
 ## Runtime adjustment
 - method logAtLeastToLevel(int $level) may change the verbosity level above the level set when instatiating.
 - method setUser(int|string $user) may add the user identification to the error messages
