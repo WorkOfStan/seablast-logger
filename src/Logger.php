@@ -326,7 +326,8 @@ class Logger extends AbstractLogger implements LoggerInterface
                 (
                     (($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4))
                     - $RUNNING_TIME_PREVIOUS) > $this->conf[self::CONF_LOG_PROFILING_STEP]
-                ) && $this->conf[self::CONF_LOG_PROFILING_STEP]) {
+                ) && $this->conf[self::CONF_LOG_PROFILING_STEP]
+            ) {
                 $message = "SLOWSTEP " . $message; //110812, PROFILING
             }
 
