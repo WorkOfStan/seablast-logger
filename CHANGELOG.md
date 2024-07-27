@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Added` for new features
 
 ### `Changed` for changes in existing functionality
+Stable version for `"php": "^7.1 || ^8.0"`. (As of PHP 7.1.0 visibility modifiers are allowed for class constants.)
 
 ### `Deprecated` for soon-to-be removed features
 

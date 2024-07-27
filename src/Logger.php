@@ -14,13 +14,13 @@ class Logger extends AbstractLogger implements LoggerInterface
 {
     // Define constants for configuration keys
     public const CONF_ERROR_LOG_MESSAGE_TYPE = 'error_log_message_type';
-    const CONF_LOGGING_FILE = 'logging_file';
-    const CONF_LOGGING_LEVEL = 'logging_level';
-    const CONF_LOGGING_LEVEL_NAME = 'logging_level_name';
-    const CONF_LOGGING_LEVEL_PAGE_SPEED = 'logging_level_page_speed';
-    const CONF_LOG_MONTHLY_ROTATION = 'log_monthly_rotation';
-    const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
-    const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
+    public const CONF_LOGGING_FILE = 'logging_file';
+    public const CONF_LOGGING_LEVEL = 'logging_level';
+    public const CONF_LOGGING_LEVEL_NAME = 'logging_level_name';
+    public const CONF_LOGGING_LEVEL_PAGE_SPEED = 'logging_level_page_speed';
+    public const CONF_LOG_MONTHLY_ROTATION = 'log_monthly_rotation';
+    public const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
+    public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
 
     /** @var array<mixed> int,string,bool,array */
     protected $conf = array();
@@ -88,7 +88,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param int $newLevel
      * @return void
      */
-    public function logAtLeastToLevel(int $newLevel)
+    public function logAtLeastToLevel(int $newLevel): void
     {
         if (!is_int($newLevel)) {
             throw new \Psr\Log\InvalidArgumentException('The variable $newLevel is not an integer.');
@@ -99,7 +99,7 @@ class Logger extends AbstractLogger implements LoggerInterface
     /**
      * @return float
      */
-    public function getLastRunningTime()
+    public function getLastRunningTime(): float
     {
         return $this->runningTime;
     }
@@ -110,7 +110,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param int|string $user
      * @return void
      */
-    public function setUser($user)
+    public function setUser($user): void
     {
         $this->user = (string) $user;
     }
@@ -205,7 +205,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function info($message, array $context = array())
+    public function info($message, array $context = array()): void
     {
         $this->log(4, $message, $context);
     }
@@ -217,7 +217,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function debug($message, array $context = array())
+    public function debug($message, array $context = array()): void
     {
         $this->log(5, $message, $context);
     }
@@ -261,7 +261,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      *  1001 Establish correct error_number
      *
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = array()): void
     {
         //TODO add variable $line - it should always be called as basename(__FILE__)."#".__LINE__ ,
         //so it's clear which line of the source code triggered the call
