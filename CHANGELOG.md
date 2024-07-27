@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [2.0] - 2024-07-27
+Stable version for `"php": "^7.1 || ^8.0"`. (As of PHP 7.1.0 visibility modifiers are allowed for class constants.)
+
 ## [1.0] - 2024-07-27
 Stable version for `"php": "^5.3 || ^7.0"`
 
@@ -30,7 +33,8 @@ Stable version for `"php": "^5.3 || ^7.0"`
 ## [0.1] - 2024-07-12
 - A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
 
-[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v1.0...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0...HEAD
+[2.0]: https://github.com/WorkOfStan/seablast-logger/compare/v1.0...v2.0
 [1.0]: https://github.com/WorkOfStan/seablast-logger/compare/v0.2...v1.0
 [0.2]: https://github.com/WorkOfStan/seablast-logger/compare/v0.1...v0.2
 [0.1]: https://github.com/WorkOfStan/seablast-logger/releases/tag/v0.1
