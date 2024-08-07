@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Logger;
 
 use Psr\Log\AbstractLogger;
@@ -23,7 +25,7 @@ class Logger extends AbstractLogger implements LoggerInterface
     public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
 
     /** @var array<mixed> int,string,bool,array */
-    protected $conf = array();
+    protected $conf = [];
     /** @var int */
     private $overrideLoggingLevel;
     /** @var float */
@@ -34,15 +36,14 @@ class Logger extends AbstractLogger implements LoggerInterface
     private $user = 'unidentified';
 
     /**
-     *
      * @param array<mixed> $conf
-     * @param LoggerTime $time
+     * @param ?LoggerTime $time
      */
-    public function __construct(array $conf = array(), LoggerTime $time = null)
+    public function __construct(array $conf = [], ?LoggerTime $time = null)
     {
         $this->time = ($time === null) ? (new LoggerTime()) : $time;
         $this->conf = array_merge(
-            array( // default values
+            [ // default values
                 // 0 = send message to PHP's system logger;
                 // recommended is however 3, i.e. append to the file destination set in the field 'logging_file'
                 self::CONF_ERROR_LOG_MESSAGE_TYPE => 0,
@@ -51,7 +52,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 // verbosity: log up to the level set here, default=5 = debug
                 self::CONF_LOGGING_LEVEL => 5,
                 // rename or renumber, if needed
-                self::CONF_LOGGING_LEVEL_NAME => array(
+                self::CONF_LOGGING_LEVEL_NAME => [
                     0 => 'unknown',
                     1 => 'fatal',
                     'error',
@@ -59,7 +60,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                     'info',
                     'debug',
                     'speed'
-                ),
+                ],
                 // the logging level to which the page generation speed (i.e. error_number 6) is to be logged
                 self::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
                 // false => use logging_file with log extension as destination
@@ -70,7 +71,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 // A fatal error may be logged only.
                 // However, in production, set up an email address to enable error notifications.
                 self::CONF_MAIL_FOR_ADMIN_ENABLED => false,
-            ),
+            ],
             $conf
         );
         if (!is_int($this->conf[self::CONF_LOGGING_LEVEL])) {
@@ -122,7 +123,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function emergency($message, array $context = array()): void
+    public function emergency(string $message, array $context = []): void
     {
         $this->log(0, $message, $context);
     }
@@ -137,7 +138,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function alert($message, array $context = array()): void
+    public function alert(string $message, array $context = []): void
     {
         $this->log(1, $message, $context);
     }
@@ -151,7 +152,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function critical($message, array $context = array()): void
+    public function critical(string $message, array $context = []): void
     {
         $this->log(1, $message, $context);
     }
@@ -164,7 +165,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function error($message, array $context = array()): void
+    public function error(string $message, array $context = []): void
     {
         $this->log(2, $message, $context);
     }
@@ -179,7 +180,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function warning($message, array $context = array()): void
+    public function warning(string $message, array $context = []): void
     {
         $this->log(3, $message, $context);
     }
@@ -191,7 +192,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function notice($message, array $context = array()): void
+    public function notice(string $message, array $context = []): void
     {
         $this->log(4, $message, $context);
     }
@@ -205,7 +206,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function info($message, array $context = array()): void
+    public function info(string $message, array $context = []): void
     {
         $this->log(4, $message, $context);
     }
@@ -217,7 +218,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * @param array<int> $context
      * @return void
      */
-    public function debug($message, array $context = array()): void
+    public function debug(string $message, array $context = []): void
     {
         $this->log(5, $message, $context);
     }
@@ -259,28 +260,27 @@ class Logger extends AbstractLogger implements LoggerInterface
      *  23 Algorithm flow<br/>
      *  24 Third party API<br/>
      *  1001 Establish correct error_number
-     *
      */
-    public function log($level, $message, array $context = array()): void
+    public function log($level, string $message, array $context = []): void
     {
         //TODO add variable $line - it should always be called as basename(__FILE__)."#".__LINE__ ,
         //so it's clear which line of the source code triggered the call
         if (!is_string($message)) {
-            $message = "wrong message type " . gettype($message) . ": Logger->log(" . print_r($level, true) . ","
-                . print_r($message, true) . ")";
+            $message = 'wrong message type ' . gettype($message) . ': Logger->log(' . print_r($level, true) . ','
+                . print_r($message, true) . ')';
             $this->error($message);
         }
         // psr log levels to numbered severity
-        $psr2int = array(
+        $psr2int = [
             LogLevel::EMERGENCY => 0,
-            LogLevel::ALERT     => 1,
-            LogLevel::CRITICAL  => 1,
-            LogLevel::ERROR     => 2,
-            LogLevel::WARNING   => 3,
-            LogLevel::NOTICE    => 4,
-            LogLevel::INFO      => 4,
-            LogLevel::DEBUG     => 5,
-        );
+            LogLevel::ALERT => 1,
+            LogLevel::CRITICAL => 1,
+            LogLevel::ERROR => 2,
+            LogLevel::WARNING => 3,
+            LogLevel::NOTICE => 4,
+            LogLevel::INFO => 4,
+            LogLevel::DEBUG => 5,
+        ];
         if (is_string($level)) {
             if (array_key_exists($level, $psr2int)) {
                 $level = $psr2int[$level];
@@ -294,7 +294,7 @@ class Logger extends AbstractLogger implements LoggerInterface
         }
 
         // if context array is set then get the value of the 'error_number' field or the first element
-        $error_number = ($context === array())
+        $error_number = ($context === [])
             ? 0
             : (isset($context['error_number']) ? (int) $context['error_number'] : (int) reset($context));
 
@@ -304,10 +304,10 @@ class Logger extends AbstractLogger implements LoggerInterface
             // log 0=unknown/default 1=fatal 2=error 3=warning 4=info 5=debug 6=speed according to $level
             (
                 $level <= max(
-                    array(
+                    [
                         $this->conf[self::CONF_LOGGING_LEVEL],
                         $this->overrideLoggingLevel,
-                    )
+                    ]
                 )
             )
             // or log page_speed everytime error_number equals 6 and
@@ -324,31 +324,31 @@ class Logger extends AbstractLogger implements LoggerInterface
                     - $RUNNING_TIME_PREVIOUS) > $this->conf[self::CONF_LOG_PROFILING_STEP]
                 ) && $this->conf[self::CONF_LOG_PROFILING_STEP]
             ) {
-                $message = "SLOWSTEP " . $message; //110812, PROFILING
+                $message = 'SLOWSTEP ' . $message; //110812, PROFILING
             }
 
-            $message_prefix = "[" . date("d-M-Y H:i:s") . "] [" . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level]
-                . "] [" . $error_number . "] [" . $_SERVER['SCRIPT_FILENAME'] . "] ["
-                . $this->user . "@"
+            $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level]
+                . '] [' . $error_number . '] [' . $_SERVER['SCRIPT_FILENAME'] . '] ['
+                . $this->user . '@'
                 // PHPUnit test (CLI) does not set REMOTE_ADDR
                 // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to log IP?
                 . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')
-                . "] [" . $this->runningTime . "] ["
+                . '] [' . $this->runningTime . '] ['
                 // PHPUnit test (CLI) does not set REQUEST_URI
-                . (isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : '-')
-                . "] ";
+                . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '-')
+                . '] ';
             // $logging_file not set and it should be
             if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {
                 // so write into the default destination
-                $result = error_log($message_prefix . "(error: logging_file should be set!) $message");
+                $result = error_log("{$message_prefix}(error: logging_file should be set!) {$message}");
             } else {
-                $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 0)
+                $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] === 0)
                     ? $this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] : 3;
-                $result = ($this->conf[self::CONF_LOG_MONTHLY_ROTATION])
+                $result = $this->conf[self::CONF_LOG_MONTHLY_ROTATION]
                     ? error_log(
-                        $message_prefix . $message . (($messageType != 0) ? (PHP_EOL) : ('')),
+                        $message_prefix . $message . (($messageType != 0) ? PHP_EOL : ''),
                         $messageType,
-                        "{$this->conf[self::CONF_LOGGING_FILE]}." . date("Y-m") . ".log"
+                        "{$this->conf[self::CONF_LOGGING_FILE]}." . date('Y-m') . '.log'
                     ) // writes into a monthly rotating file
                     : error_log(
                         $message_prefix . $message . PHP_EOL,
@@ -357,7 +357,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                     ); // writes into one file
             }
             // mailto admin. 'mail_for_admin_enabled' has to be an email
-            if ($level == 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]) {
+            if ($level === 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]) {
                 error_log($message_prefix . $message . PHP_EOL, 1, $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]);
             }
         }

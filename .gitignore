@@ -1,5 +1,6 @@
 #disable temporary and log files and dirs
 *.log
+/.phpunit.result.cache
 
 #disable composer-managed libraries
 /vendor/
