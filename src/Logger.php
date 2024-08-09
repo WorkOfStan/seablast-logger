@@ -7,10 +7,11 @@ namespace Seablast\Logger;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Seablast\Logger\LoggerTime;
 
 /**
  * A [PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity.
+ *
+ * Note: Until PHP 7.3, the parameter #1 $message in methods implementing `Psr\Log\AbstractLogger` is of type `mixed`.
  */
 class Logger extends AbstractLogger implements LoggerInterface
 {
@@ -59,7 +60,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                     'warning',
                     'info',
                     'debug',
-                    'speed'
+                    'speed',
                 ],
                 // the logging level to which the page generation speed (i.e. error_number 6) is to be logged
                 self::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
@@ -87,6 +88,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * It is however possible to programmatically raise the logging level set in configuration.
      *
      * @param int $newLevel
+     *
      * @return void
      */
     public function logAtLeastToLevel(int $newLevel): void
@@ -109,6 +111,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      * DI setter.
      *
      * @param int|string $user
+     *
      * @return void
      */
     public function setUser($user): void
@@ -121,9 +124,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function emergency(string $message, array $context = []): void
+    public function emergency($message, array $context = []): void
     {
         $this->log(0, $message, $context);
     }
@@ -136,9 +140,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function alert(string $message, array $context = []): void
+    public function alert($message, array $context = []): void
     {
         $this->log(1, $message, $context);
     }
@@ -150,9 +155,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function critical(string $message, array $context = []): void
+    public function critical($message, array $context = []): void
     {
         $this->log(1, $message, $context);
     }
@@ -163,9 +169,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function error(string $message, array $context = []): void
+    public function error($message, array $context = []): void
     {
         $this->log(2, $message, $context);
     }
@@ -178,9 +185,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function warning(string $message, array $context = []): void
+    public function warning($message, array $context = []): void
     {
         $this->log(3, $message, $context);
     }
@@ -190,9 +198,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function notice(string $message, array $context = []): void
+    public function notice($message, array $context = []): void
     {
         $this->log(4, $message, $context);
     }
@@ -204,9 +213,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function info(string $message, array $context = []): void
+    public function info($message, array $context = []): void
     {
         $this->log(4, $message, $context);
     }
@@ -216,9 +226,10 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * @param string $message
      * @param array<int> $context
+     *
      * @return void
      */
-    public function debug(string $message, array $context = []): void
+    public function debug($message, array $context = []): void
     {
         $this->log(5, $message, $context);
     }
@@ -261,7 +272,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      *  24 Third party API<br/>
      *  1001 Establish correct error_number
      */
-    public function log($level, string $message, array $context = []): void
+    public function log($level, $message, array $context = []): void
     {
         //TODO add variable $line - it should always be called as basename(__FILE__)."#".__LINE__ ,
         //so it's clear which line of the source code triggered the call

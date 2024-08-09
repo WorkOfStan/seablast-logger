@@ -55,6 +55,7 @@ class LoggerTime
      * If called with 'Page Generated in %s seconds', it returns "Page Generated in x.xxxx seconds"
      *
      * @param string $langStringPageGeneratedIn instead of $backyardLangString['page_generated_in']
+     *
      * @return string
      */
     public function pageGeneratedIn(string $langStringPageGeneratedIn = '%s'): string

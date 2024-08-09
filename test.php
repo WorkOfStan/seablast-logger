@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Seablast\Logger\Logger;
 
 require 'vendor/autoload.php';
@@ -20,7 +22,7 @@ $severities = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', '
 // Loop through levels 1 to 5
 for ($level = 1; $level <= 5; $level++) {
     // Set the logging level
-    echo "<h1>logAtLeastToLevel($level)</h1>";
+    echo "<h1>logAtLeastToLevel({$level})</h1>";
     $logger->logAtLeastToLevel($level);
 
     foreach ($severities as $severity) {
