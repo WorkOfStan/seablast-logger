@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seablast\Logger;
 
 class LoggerTime
@@ -19,20 +21,19 @@ class LoggerTime
      *
      * @return float
      */
-    public function getmicrotime()
+    public function getmicrotime(): float
     {
         if (version_compare((string) phpversion(), '5.0.0') == -1) {
             list($usec, $sec) = explode(' ', microtime());
-            return ((float) $usec + (float) $sec);
+            return (float) $usec + (float) $sec;
         }
         return microtime(true);
     }
 
     /**
-     *
      * @return float
      */
-    public function getPageTimestamp()
+    public function getPageTimestamp(): float
     {
         if (is_null($this->pageTimestamp)) {
             $this->pageTimestamp = $this->getmicrotime(); // initialisation, so that it can't return null
@@ -45,7 +46,7 @@ class LoggerTime
      *
      * @return float
      */
-    public function getRunningTime()
+    public function getRunningTime(): float
     {
         return round($this->getmicrotime() - $this->pageTimestamp, 4);
     }
@@ -54,9 +55,10 @@ class LoggerTime
      * If called with 'Page Generated in %s seconds', it returns "Page Generated in x.xxxx seconds"
      *
      * @param string $langStringPageGeneratedIn instead of $backyardLangString['page_generated_in']
+     *
      * @return string
      */
-    public function pageGeneratedIn($langStringPageGeneratedIn = '%s')
+    public function pageGeneratedIn(string $langStringPageGeneratedIn = '%s'): string
     {
         return str_replace(
             '%s',
