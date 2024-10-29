@@ -309,8 +309,6 @@ class Logger extends AbstractLogger implements LoggerInterface
             ? 0
             : (isset($context['error_number']) ? (int) $context['error_number'] : (int) reset($context));
 
-        $result = true; //it could eventually be reset to false after calling error_log()
-
         if (
             // log 0=unknown/default 1=fatal 2=error 3=warning 4=info 5=debug 6=speed according to $level
             (
@@ -348,6 +346,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 // PHPUnit test (CLI) does not set REQUEST_URI
                 . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '-')
                 . '] ';
+            $result = true; //it could eventually be reset to false after calling error_log()
             // $logging_file not set and it should be
             if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {
                 // so write into the default destination
@@ -367,13 +366,16 @@ class Logger extends AbstractLogger implements LoggerInterface
                         "{$this->conf[self::CONF_LOGGING_FILE]}.log"
                     ); // writes into one file
             }
+            if ($result === false) {
+                throw new ErrorLogFailureException('error_log() failed');
+            }
             // mailto admin. 'mail_for_admin_enabled' has to be an email
             if ($level === 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]) {
-                error_log($message_prefix . $message . PHP_EOL, 1, $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]);
+                $result2 = error_log($message_prefix . $message . PHP_EOL, 1, $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]);
+                if ($result2 === false) {
+                    throw new ErrorLogFailureException('error_log() failed');
+                }
             }
-        }
-        if ($result === false) {
-            throw new ErrorLogFailureException('error_log() failed');
         }
     }
     /** Alternative way:
