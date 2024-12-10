@@ -18,11 +18,12 @@ $conf = [
 ];
 $logger = new Logger($conf);
 
+echo "<h1>Compare to what appears in the {$conf[Logger::CONF_LOGGING_FILE]}" . date('Y-m') . ".log</h1>";
 $severities = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
 // Loop through levels 1 to 5
 for ($level = 1; $level <= 5; $level++) {
     // Set the logging level
-    echo "<h1>logAtLeastToLevel({$level})</h1>";
+    echo "<h2>logAtLeastToLevel({$level})</h2>";
     $logger->logAtLeastToLevel($level);
 
     foreach ($severities as $severity) {

@@ -37,16 +37,6 @@ class LoggerTimeTest extends TestCase
     }
 
     /**
-     * @covers Seablast\Logger\LoggerTime::getmicrotime
-     *
-     * @return void
-     */
-    public function testGetmicrotime(): void
-    {
-        $this->assertTrue(is_float($this->object->getmicrotime()));
-    }
-
-    /**
      * @covers Seablast\Logger\LoggerTime::getRunningTime
      *
      * @return void

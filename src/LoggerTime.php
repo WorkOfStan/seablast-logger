@@ -6,8 +6,8 @@ namespace Seablast\Logger;
 
 class LoggerTime
 {
-    /** @var ?float */
-    private $pageTimestamp = null;
+    /** @var float */
+    private $pageTimestamp;
 
     public function __construct()
     {
@@ -23,10 +23,6 @@ class LoggerTime
      */
     public function getmicrotime(): float
     {
-        if (version_compare((string) phpversion(), '5.0.0') == -1) {
-            list($usec, $sec) = explode(' ', microtime());
-            return (float) $usec + (float) $sec;
-        }
         return microtime(true);
     }
 
@@ -35,9 +31,7 @@ class LoggerTime
      */
     public function getPageTimestamp(): float
     {
-        if (is_null($this->pageTimestamp)) {
-            $this->pageTimestamp = $this->getmicrotime(); // initialisation, so that it can't return null
-        }
+        // Since the constructor initializes $pageTimestamp, there's no need to check and initialize it again.
         return $this->pageTimestamp;
     }
 

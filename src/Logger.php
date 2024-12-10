@@ -93,9 +93,6 @@ class Logger extends AbstractLogger implements LoggerInterface
      */
     public function logAtLeastToLevel(int $newLevel): void
     {
-        if (!is_int($newLevel)) {
-            throw new \Psr\Log\InvalidArgumentException('The variable $newLevel is not an integer.');
-        }
         $this->overrideLoggingLevel = (int) $newLevel;
     }
 
@@ -276,11 +273,11 @@ class Logger extends AbstractLogger implements LoggerInterface
     {
         //TODO add variable $line - it should always be called as basename(__FILE__)."#".__LINE__ ,
         //so it's clear which line of the source code triggered the call
-        if (!is_string($message)) {
-            $message = 'wrong message type ' . gettype($message) . ': Logger->log(' . print_r($level, true) . ','
-                . print_r($message, true) . ')';
-            $this->error($message);
-        }
+        //if (!is_string($message)) {
+        //    $message = 'wrong message type ' . gettype($message) . ': Logger->log(' . print_r($level, true) . ','
+        //        . print_r($message, true) . ')';
+        //    $this->error($message);
+        //}
         // psr log levels to numbered severity
         $psr2int = [
             LogLevel::EMERGENCY => 0,
@@ -309,8 +306,6 @@ class Logger extends AbstractLogger implements LoggerInterface
             ? 0
             : (isset($context['error_number']) ? (int) $context['error_number'] : (int) reset($context));
 
-        $result = true; //it could eventually be reset to false after calling error_log()
-
         if (
             // log 0=unknown/default 1=fatal 2=error 3=warning 4=info 5=debug 6=speed according to $level
             (
@@ -338,16 +333,31 @@ class Logger extends AbstractLogger implements LoggerInterface
                 $message = 'SLOWSTEP ' . $message; //110812, PROFILING
             }
 
+            // checks for the static code analysis
+            if (!is_array($this->conf[self::CONF_LOGGING_LEVEL_NAME])) {
+                $this->conf[self::CONF_LOGGING_LEVEL_NAME] = [];
+            }
+            if (
+                !is_string($this->conf[self::CONF_LOGGING_LEVEL_NAME][$level])
+            ) {
+                $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level] = 'non-string';
+            }
             $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level]
-                . '] [' . $error_number . '] [' . $_SERVER['SCRIPT_FILENAME'] . '] ['
+                . '] [' . $error_number . '] ['
+                . ((isset($_SERVER['SCRIPT_FILENAME']) && is_string($_SERVER['SCRIPT_FILENAME'])) //
+                ? $_SERVER['SCRIPT_FILENAME'] : 'no-script')
+                . '] ['
                 . $this->user . '@'
                 // PHPUnit test (CLI) does not set REMOTE_ADDR
-                // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to log IP?
-                . (isset($_SERVER['REMOTE_ADDR']) ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')
+                // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to just log IP?
+                . ((isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) //
+                ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')
                 . '] [' . $this->runningTime . '] ['
                 // PHPUnit test (CLI) does not set REQUEST_URI
-                . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '-')
+                . ((isset($_SERVER['REQUEST_URI']) && is_string($_SERVER['REQUEST_URI'])) //
+                ? $_SERVER['REQUEST_URI'] : '-')
                 . '] ';
+            $result = true; //it could eventually be reset to false after calling error_log()
             // $logging_file not set and it should be
             if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {
                 // so write into the default destination
@@ -355,6 +365,9 @@ class Logger extends AbstractLogger implements LoggerInterface
             } else {
                 $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] === 0)
                     ? $this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] : 3;
+                if (!is_string($this->conf[self::CONF_LOGGING_FILE])) {
+                    $this->conf[self::CONF_LOGGING_FILE] = './error_log'; // a forced default
+                }
                 $result = $this->conf[self::CONF_LOG_MONTHLY_ROTATION]
                     ? error_log(
                         $message_prefix . $message . (($messageType != 0) ? PHP_EOL : ''),
@@ -367,13 +380,23 @@ class Logger extends AbstractLogger implements LoggerInterface
                         "{$this->conf[self::CONF_LOGGING_FILE]}.log"
                     ); // writes into one file
             }
-            // mailto admin. 'mail_for_admin_enabled' has to be an email
-            if ($level === 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]) {
-                error_log($message_prefix . $message . PHP_EOL, 1, $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]);
+            if ($result === false) {
+                throw new ErrorLogFailureException('error_log() failed');
             }
-        }
-        if ($result === false) {
-            throw new ErrorLogFailureException('error_log() failed');
+            // mailto admin. 'mail_for_admin_enabled' has to be an email
+            if (
+                $level === 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED] //
+                && is_string($this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED])
+            ) {
+                $result2 = error_log(
+                    $message_prefix . $message . PHP_EOL,
+                    1,
+                    $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]
+                );
+                if ($result2 === false) {
+                    throw new ErrorLogFailureException('error_log() mailing failed');
+                }
+            }
         }
     }
     /** Alternative way:
