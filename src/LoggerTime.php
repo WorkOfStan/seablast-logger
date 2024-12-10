@@ -31,10 +31,7 @@ class LoggerTime
      */
     public function getPageTimestamp(): float
     {
-//        if (is_null($this->pageTimestamp)) {
-//            $this->pageTimestamp = $this->getmicrotime(); // initialisation, so that it can't return null
-//        }
-        // Since the constructor initializes $pageTimestamp, there's no need to check and initialize it again. 
+        // Since the constructor initializes $pageTimestamp, there's no need to check and initialize it again.
         return $this->pageTimestamp;
     }
 
