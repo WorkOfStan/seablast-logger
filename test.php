@@ -18,7 +18,7 @@ $conf = [
 ];
 $logger = new Logger($conf);
 
-echo "<h1>See what appears in the {$conf[Logger::CONF_LOGGING_FILE]}" . date('Y-m') . ".log</h1>";
+echo "<h1>Compare to what appears in the {$conf[Logger::CONF_LOGGING_FILE]}" . date('Y-m') . ".log</h1>";
 $severities = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
 // Loop through levels 1 to 5
 for ($level = 1; $level <= 5; $level++) {

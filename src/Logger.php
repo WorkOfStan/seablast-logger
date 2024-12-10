@@ -93,9 +93,6 @@ class Logger extends AbstractLogger implements LoggerInterface
      */
     public function logAtLeastToLevel(int $newLevel): void
     {
-//        if (!is_int($newLevel)) {
-//            throw new \Psr\Log\InvalidArgumentException('The variable $newLevel is not an integer.');
-//        }
         $this->overrideLoggingLevel = (int) $newLevel;
     }
 
@@ -276,12 +273,11 @@ class Logger extends AbstractLogger implements LoggerInterface
     {
         //TODO add variable $line - it should always be called as basename(__FILE__)."#".__LINE__ ,
         //so it's clear which line of the source code triggered the call
-        /** @phpstan-ignore function.alreadyNarrowedType */
-        if (!is_string($message)) {
-            $message = 'wrong message type ' . gettype($message) . ': Logger->log(' . print_r($level, true) . ','
-                . print_r($message, true) . ')';
-            $this->error($message);
-        }
+        //if (!is_string($message)) {
+        //    $message = 'wrong message type ' . gettype($message) . ': Logger->log(' . print_r($level, true) . ','
+        //        . print_r($message, true) . ')';
+        //    $this->error($message);
+        //}
         // psr log levels to numbered severity
         $psr2int = [
             LogLevel::EMERGENCY => 0,
@@ -353,7 +349,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 . '] ['
                 . $this->user . '@'
                 // PHPUnit test (CLI) does not set REMOTE_ADDR
-                // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to log IP?
+                // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to just log IP?
                 . ((isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) //
                 ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')
                 . '] [' . $this->runningTime . '] ['
