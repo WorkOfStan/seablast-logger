@@ -43,6 +43,8 @@ class LoggerTimeTest extends TestCase
      */
     public function testGetmicrotime(): void
     {
+        // I want to test it anyway, just in case.
+        /** @phpstan-ignore function.alreadyNarrowedType, method.alreadyNarrowedType */
         $this->assertTrue(is_float($this->object->getmicrotime()));
     }
 
