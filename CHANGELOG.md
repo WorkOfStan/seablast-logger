@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - prettier-fix
 
+### Changed
+
+- update Logger.php limited result-exception scope
+- more strict type checks
+
 ### Removed
 
 - LoggerTime::getmicrotime() condition addressing PHP<5
