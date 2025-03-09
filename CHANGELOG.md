@@ -19,11 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [2.0.3] - 2025-03-07
+## [2.0.3] - 2025-03-09
 
 ### Changed
 
 - GitHub Actions combined to polish-the-code.yml (instead of linter.yml, php-composer-dependencies.yml, prettier-fix.yml, phpcbf.yml)
+- GitHub Actions version bump
 
 ## [2.0.2] - 2024-12-10
 
