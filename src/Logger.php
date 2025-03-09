@@ -36,6 +36,31 @@ class Logger extends AbstractLogger implements LoggerInterface
     /** @var string*/
     private $user = 'unidentified';
 
+    //    /** @var int */
+    //    private $errorLogMessageType = 0;
+    //    /** @var string */
+    //    private $loggingFile = '';
+    //    /** @var int */
+    //    private $loggingLevel = 5;
+    //    /** @var array */
+    //    private $loggingLevelName = [
+    //        0 => 'unknown',
+    //        1 => 'fatal',
+    //        'error',
+    //        'warning',
+    //        'info',
+    //        'debug',
+    //        'speed',
+    //    ];
+    //    /** @var int */
+    //    private $loggingLevelPageSpeed = 5;
+    //    /** @var bool */
+    //    private $logMonthlyRotation = true;
+    //    /** @var bool|float */
+    //    private $logProfilingStep = false;
+    //    /** @var bool|string */
+    //    private $mailForAdminEnabled = false;
+
     /**
      * @param array<mixed> $conf
      * @param ?LoggerTime $time
@@ -80,6 +105,20 @@ class Logger extends AbstractLogger implements LoggerInterface
         }
         $this->overrideLoggingLevel = $this->conf[self::CONF_LOGGING_LEVEL];
         //@todo replace $this->conf by the class properties
+
+        //        $this->errorLogMessageType = $conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] ?? $this->errorLogMessageType;
+        //        $this->loggingFile = $conf[self::CONF_LOGGING_FILE] ?? $this->loggingFile;
+        //        $this->loggingLevel = $conf[self::CONF_LOGGING_LEVEL] ?? $this->loggingLevel;
+        //        $this->loggingLevelName = $conf[self::CONF_LOGGING_LEVEL_NAME] ?? $this->loggingLevelName;
+        //    $this->loggingLevelPageSpeed = $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] ?? $this->loggingLevelPageSpeed;
+        //        $this->logMonthlyRotation = $conf[self::CONF_LOG_MONTHLY_ROTATION] ?? $this->logMonthlyRotation;
+        //        $this->logProfilingStep = $conf[self::CONF_LOG_PROFILING_STEP] ?? $this->logProfilingStep;
+        //        $this->mailForAdminEnabled = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED] ?? $this->mailForAdminEnabled;
+        //
+        //        if (!is_int($this->loggingLevel)) {
+        //            throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
+        //        }
+        //        $this->overrideLoggingLevel = $this->loggingLevel;
     }
 
     /**
