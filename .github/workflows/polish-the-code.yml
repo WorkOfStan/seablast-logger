@@ -12,6 +12,11 @@ on:
       # notest branches to ignore testing of partial online commits
       - "notest/**"
 
+  schedule:
+    # Run the workflow at 6:30 AM UTC on the 15th of every month
+    - cron: "30 6 15 * *"
+    # Scheduled runs do not commit-changes automatically to the same branch
+
 permissions:
   # only prettier-fix and phpcs-phpcbf need write permission, for others read is enough
   contents: read
@@ -39,9 +44,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Invoke the Prettier fix
-        uses: WorkOfStan/prettier-fix@v1.1.3
+        uses: WorkOfStan/prettier-fix@v1.1.4
         with:
-          commit-changes: true
+          commit-changes: ${{ github.event_name != 'schedule' }}
 
   phpcs-phpcbf:
     needs: prettier-fix
@@ -53,9 +58,9 @@ jobs:
     steps:
       - name: Invoke the PHPCS check and PHPCBF fix
         # Use the latest commit in the main branch.
-        uses: WorkOfStan/phpcs-fix@v1.0.1
+        uses: WorkOfStan/phpcs-fix@v1.0.2
         with:
-          commit-changes: true
+          commit-changes: ${{ github.event_name != 'schedule' }}
           php-version: "8.2"
           stop-on-manual-fix: true
 
