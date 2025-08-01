@@ -1,6 +1,6 @@
 <?php
 
-namespace Seablast\Logger\Test;
+namespace Seablast\Logger\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Seablast\Logger\LoggerTime;
