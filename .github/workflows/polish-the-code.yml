@@ -13,8 +13,8 @@ on:
       - "notest/**"
 
   schedule:
-    # Run the workflow at 6:30 AM UTC on the 15th of every month
-    - cron: "30 6 15 * *"
+    # Run the workflow at 6:30 AM UTC on the 25th of every month
+    - cron: "30 6 25 * *"
     # Scheduled runs do not commit-changes automatically to the same branch
 
 permissions:
