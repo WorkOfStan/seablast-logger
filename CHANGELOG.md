@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed` for changes in existing functionality
 
 - package limited to the tested PHP versions, i.e. "php": ">=7.1 <8.5"
-- github actions version bump to super-linter v8.1.0
+- GitHub Actions version bump to super-linter v8.1.0
 
 ### `Deprecated` for soon-to-be removed features
 
