@@ -22,7 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [2.0.4] - 2025-10-23
+
+chore: add PHP/8.5 support
+
 ## [2.0.3] - 2025-03-09
+
+chore: polish-the-code.yml chain of GitHub Actions
 
 ### Changed
 
@@ -30,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Actions version bump
 
 ## [2.0.2] - 2024-12-10
+
+refactor: Fix formatting with Prettier, remove obsolete code, and enforce stricter type checks.
 
 ### Added
 
@@ -46,6 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LoggerTimeTest::testGetmicrotime() testing Seablast\Logger\LoggerTime::getmicrotime as unnecessary
 
 ## [2.0.1] - 2024-08-10
+
+ci: PHPUnit test for class LoggerTime
 
 ### Added
 
@@ -73,7 +83,8 @@ Stable version for `"php": "^5.3 || ^7.0"`
 
 - A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
 
-[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.3...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.4...HEAD
+[2.0.4]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0...v2.0.1
