@@ -104,7 +104,10 @@ class Logger extends AbstractLogger implements LoggerInterface
             $this->loggingLevelName = $normalized;
         }
         if (isset($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED])) {
-            Assert::integerish($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED], 'The logging_level_page_speed MUST be an integer.');
+            Assert::integerish(
+                $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED],
+                'The logging_level_page_speed MUST be an integer.'
+            );
             $this->loggingLevelPageSpeed = (int) $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED];
         }
         if (isset($conf[self::CONF_LOG_MONTHLY_ROTATION])) {
@@ -120,7 +123,9 @@ class Logger extends AbstractLogger implements LoggerInterface
         if (isset($conf[self::CONF_MAIL_FOR_ADMIN_ENABLED])) {
             $v = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED];
             if (!is_bool($v) && !is_string($v)) {
-                throw new \Psr\Log\InvalidArgumentException('The mail_for_admin_enabled MUST be bool or string (email).');
+                throw new \Psr\Log\InvalidArgumentException(
+                    'The mail_for_admin_enabled MUST be bool or string (email).'
+                );
             }
             $this->mailForAdminEnabled = $v;
         }
