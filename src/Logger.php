@@ -360,7 +360,7 @@ class Logger extends AbstractLogger implements LoggerInterface
 
             // checks for the static code analysis
             if (!is_array($this->loggingLevelName)) {
-                $this->conf[self::CONF_LOGGING_LEVEL_NAME] = [];
+                $this->loggingLevelName = [];
             }
             if (
                 !is_string($this->loggingLevelName[$level])
