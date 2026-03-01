@@ -7,7 +7,7 @@ namespace Seablast\Logger;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use WebMozart\Assert\Assert;
+use Webmozart\Assert\Assert;
 
 /**
  * A [PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity.
