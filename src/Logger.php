@@ -7,6 +7,7 @@ namespace Seablast\Logger;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use WebMozart\Assert\Assert;
 
 /**
  * A [PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity.
@@ -96,6 +97,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             $this->loggingLevelName = $conf[self::CONF_LOGGING_LEVEL_NAME];
         }
         if (isset($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED])) {
+            Assert::integerish($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED], 'The logging_level_page_speed MUST be an integer.');
             $this->loggingLevelPageSpeed = (int) $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED];
         }
         if (isset($conf[self::CONF_LOG_MONTHLY_ROTATION])) {
