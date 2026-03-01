@@ -8,7 +8,9 @@
     "tracy/tracy": "^2.9.8 || ^2.10.9 || ^2.11.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.5.52 || ^9 || ^10 || ^11 || ^12"
+    "phpstan/phpstan-webmozart-assert": "^1.2",
+    "phpunit/phpunit": "^8.5.52 || ^9 || ^10 || ^11 || ^12",
+    "webmozart/assert": "^1.11"
   },
   "license": "MIT",
   "authors": [
