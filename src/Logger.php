@@ -77,7 +77,11 @@ class Logger extends AbstractLogger implements LoggerInterface
 
         // prefer explicit property defaults; only override when config key is provided
         if (isset($conf[self::CONF_ERROR_LOG_MESSAGE_TYPE])) {
-            $this->errorLogMessageType = (int) $conf[self::CONF_ERROR_LOG_MESSAGE_TYPE];
+            $v = $conf[self::CONF_ERROR_LOG_MESSAGE_TYPE];
+            if (!is_int($v) && !is_numeric($v)) {
+                throw new \Psr\Log\InvalidArgumentException('The error_log_message_type MUST be an integer.');
+            }
+            $this->errorLogMessageType = (int) $v;
         }
         if (isset($conf[self::CONF_LOGGING_FILE])) {
             $this->loggingFile = (string) $conf[self::CONF_LOGGING_FILE];
@@ -98,10 +102,18 @@ class Logger extends AbstractLogger implements LoggerInterface
             $this->logMonthlyRotation = (bool) $conf[self::CONF_LOG_MONTHLY_ROTATION];
         }
         if (isset($conf[self::CONF_LOG_PROFILING_STEP])) {
-            $this->logProfilingStep = $conf[self::CONF_LOG_PROFILING_STEP];
+            $v = $conf[self::CONF_LOG_PROFILING_STEP];
+            if (!is_bool($v) && !is_float($v) && !is_int($v)) {
+                throw new \Psr\Log\InvalidArgumentException('The log_profiling_step MUST be bool or float.');
+            }
+            $this->logProfilingStep = $v;
         }
         if (isset($conf[self::CONF_MAIL_FOR_ADMIN_ENABLED])) {
-            $this->mailForAdminEnabled = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED];
+            $v = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED];
+            if (!is_bool($v) && !is_string($v)) {
+                throw new \Psr\Log\InvalidArgumentException('The mail_for_admin_enabled MUST be bool or string (email).');
+            }
+            $this->mailForAdminEnabled = $v;
         }
 
         $this->overrideLoggingLevel = $this->loggingLevel;
