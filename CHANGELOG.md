@@ -27,6 +27,18 @@ fix: remove support below PHP/7.2, because of CVE-2026-24765
 
 - package limited to the tested PHP versions, i.e. "php": ">=7.2 <8.6"
 - GitHub Actions version bump to super-linter v8.5.0
+- Logger refactor: replaced legacy protected $conf array with explicit, typed class properties (errorLogMessageType, loggingFile, loggingLevel, loggingLevelName, loggingLevelPageSpeed, logMonthlyRotation, logProfilingStep, mailForAdminEnabled) to improve type safety and static analysis compatibility.
+- Constructor now prefers property defaults and only overrides properties when config keys are present; config values are validated/narrowed before assignment to satisfy PHPStan and avoid unsafe casts.
+- Introduced WebMozart Assert for concise runtime validations where appropriate.
+
+### Added
+
+- PHPStan-friendly type hints and PHPDoc improvements for Logger properties (e.g. array<int,string> for loggingLevelName).
+
+### Fixed
+
+- Resolved PHPStan errors by narrowing mixed config inputs and removing leftover references to the removed $conf property.
+- Ensured php -l and phpunit pass locally across supported PHP versions.
 
 ### Security
 
