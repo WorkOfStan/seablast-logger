@@ -26,12 +26,16 @@ class Logger extends AbstractLogger implements LoggerInterface
     public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
 
     /** @var int */
+    // 0 = send message to PHP's system logger; recommended is however 3 (append to file)
     private $errorLogMessageType = 0;
     /** @var string */
+    // if errorLogMessageType equals 3, message is appended to this file destination (path and name)
     private $loggingFile = '';
     /** @var int */
+    // verbosity: log up to this level, default=5 (debug)
     private $loggingLevel = 5;
     /** @var array<int,string> */
+    // rename or renumber, if needed
     private $loggingLevelName = [
         0 => 'unknown',
         1 => 'fatal',
@@ -42,12 +46,16 @@ class Logger extends AbstractLogger implements LoggerInterface
         6 => 'speed',
     ];
     /** @var int */
+    // the logging level to which page generation speed (error_number 6) is to be logged
     private $loggingLevelPageSpeed = 5;
     /** @var bool */
+    // false => use loggingFile as destination; true => adds .Y-m.log suffix for monthly rotation
     private $logMonthlyRotation = true;
     /** @var bool|float */
+    // prefix message that took longer than profiling step (float seconds) by SLOWSTEP
     private $logProfilingStep = false;
     /** @var bool|string */
+    // when string, treated as admin email for level 1 notifications
     private $mailForAdminEnabled = false;
 
     /** @var int */
@@ -67,41 +75,34 @@ class Logger extends AbstractLogger implements LoggerInterface
     {
         $this->time = ($time === null) ? (new LoggerTime()) : $time;
 
-        // default values
-        $defaults = [
-            self::CONF_ERROR_LOG_MESSAGE_TYPE => 0,
-            self::CONF_LOGGING_FILE => '',
-            self::CONF_LOGGING_LEVEL => 5,
-            self::CONF_LOGGING_LEVEL_NAME => [
-                0 => 'unknown',
-                1 => 'fatal',
-                2 => 'error',
-                3 => 'warning',
-                4 => 'info',
-                5 => 'debug',
-                6 => 'speed',
-            ],
-            self::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
-            self::CONF_LOG_MONTHLY_ROTATION => true,
-            self::CONF_LOG_PROFILING_STEP => false,
-            self::CONF_MAIL_FOR_ADMIN_ENABLED => false,
-        ];
-
-        $conf = array_merge($defaults, $conf);
-
-        if (!is_int($conf[self::CONF_LOGGING_LEVEL])) {
-            throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
+        // prefer explicit property defaults; only override when config key is provided
+        if (isset($conf[self::CONF_ERROR_LOG_MESSAGE_TYPE])) {
+            $this->errorLogMessageType = (int) $conf[self::CONF_ERROR_LOG_MESSAGE_TYPE];
         }
-
-        // assign to explicit properties with proper typing
-        $this->errorLogMessageType = (int) $conf[self::CONF_ERROR_LOG_MESSAGE_TYPE];
-        $this->loggingFile = (string) $conf[self::CONF_LOGGING_FILE];
-        $this->loggingLevel = (int) $conf[self::CONF_LOGGING_LEVEL];
-        $this->loggingLevelName = is_array($conf[self::CONF_LOGGING_LEVEL_NAME]) ? $conf[self::CONF_LOGGING_LEVEL_NAME] : $this->loggingLevelName;
-        $this->loggingLevelPageSpeed = (int) $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED];
-        $this->logMonthlyRotation = (bool) $conf[self::CONF_LOG_MONTHLY_ROTATION];
-        $this->logProfilingStep = $conf[self::CONF_LOG_PROFILING_STEP];
-        $this->mailForAdminEnabled = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED];
+        if (isset($conf[self::CONF_LOGGING_FILE])) {
+            $this->loggingFile = (string) $conf[self::CONF_LOGGING_FILE];
+        }
+        if (isset($conf[self::CONF_LOGGING_LEVEL])) {
+            if (!is_int($conf[self::CONF_LOGGING_LEVEL])) {
+                throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
+            }
+            $this->loggingLevel = (int) $conf[self::CONF_LOGGING_LEVEL];
+        }
+        if (isset($conf[self::CONF_LOGGING_LEVEL_NAME]) && is_array($conf[self::CONF_LOGGING_LEVEL_NAME])) {
+            $this->loggingLevelName = $conf[self::CONF_LOGGING_LEVEL_NAME];
+        }
+        if (isset($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED])) {
+            $this->loggingLevelPageSpeed = (int) $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED];
+        }
+        if (isset($conf[self::CONF_LOG_MONTHLY_ROTATION])) {
+            $this->logMonthlyRotation = (bool) $conf[self::CONF_LOG_MONTHLY_ROTATION];
+        }
+        if (isset($conf[self::CONF_LOG_PROFILING_STEP])) {
+            $this->logProfilingStep = $conf[self::CONF_LOG_PROFILING_STEP];
+        }
+        if (isset($conf[self::CONF_MAIL_FOR_ADMIN_ENABLED])) {
+            $this->mailForAdminEnabled = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED];
+        }
 
         $this->overrideLoggingLevel = $this->loggingLevel;
     }
