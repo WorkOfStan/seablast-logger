@@ -85,6 +85,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             $this->errorLogMessageType = (int) $v;
         }
         if (isset($conf[self::CONF_LOGGING_FILE])) {
+            Assert::string($conf[self::CONF_LOGGING_FILE], 'The logging_file MUST be a string.');
             $this->loggingFile = (string) $conf[self::CONF_LOGGING_FILE];
         }
         if (isset($conf[self::CONF_LOGGING_LEVEL])) {
@@ -94,7 +95,13 @@ class Logger extends AbstractLogger implements LoggerInterface
             $this->loggingLevel = (int) $conf[self::CONF_LOGGING_LEVEL];
         }
         if (isset($conf[self::CONF_LOGGING_LEVEL_NAME]) && is_array($conf[self::CONF_LOGGING_LEVEL_NAME])) {
-            $this->loggingLevelName = $conf[self::CONF_LOGGING_LEVEL_NAME];
+            # normalize to array<int,string>
+            $normalized = [];
+            foreach ($conf[self::CONF_LOGGING_LEVEL_NAME] as $k => $v) {
+                Assert::string($v, 'Each logging level name must be a string.');
+                $normalized[(int) $k] = (string) $v;
+            }
+            $this->loggingLevelName = $normalized;
         }
         if (isset($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED])) {
             Assert::integerish($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED], 'The logging_level_page_speed MUST be an integer.');
