@@ -7,6 +7,7 @@ namespace Seablast\Logger;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Webmozart\Assert\Assert;
 
 /**
  * A [PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity.
@@ -25,41 +26,39 @@ class Logger extends AbstractLogger implements LoggerInterface
     public const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
     public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
 
-    /** @var array<mixed> int,string,bool,array */
-    protected $conf = [];
+    /** @var int 0 = send message to PHP's system logger; recommended is however 3 (append to file) */
+    private $errorLogMessageType = 0;
+    /** @var string if errorLogMessageType equals 3, message is appended to this file destination (path and name) */
+    private $loggingFile = '';
+    /** @var int verbosity: log up to this level, default=5 (debug) */
+    private $loggingLevel = 5;
+    /** @var array<int,string> Note: rename or renumber, if needed */
+    private $loggingLevelName = [
+        0 => 'unknown',
+        1 => 'fatal',
+        2 => 'error',
+        3 => 'warning',
+        4 => 'info',
+        5 => 'debug',
+        6 => 'speed',
+    ];
+    /** @var int the logging level to which page generation speed (error_number 6) is to be logged */
+    private $loggingLevelPageSpeed = 5;
+    /** @var bool false => use loggingFile as destination; true => adds .Y-m.log suffix for monthly rotation */
+    private $logMonthlyRotation = true;
+    /** @var bool|float prefix message that took longer than profiling step (float seconds) by SLOWSTEP */
+    private $logProfilingStep = false;
+    /** @var bool|string when string, treated as admin email for level <=1 notifications */
+    private $mailForAdminEnabled = false;
+
     /** @var int */
     private $overrideLoggingLevel;
     /** @var float */
     private $runningTime = 0;
     /** @var LoggerTime */
     protected $time;
-    /** @var string*/
+    /** @var string */
     private $user = 'unidentified';
-
-    //    /** @var int */
-    //    private $errorLogMessageType = 0;
-    //    /** @var string */
-    //    private $loggingFile = '';
-    //    /** @var int */
-    //    private $loggingLevel = 5;
-    //    /** @var array */
-    //    private $loggingLevelName = [
-    //        0 => 'unknown',
-    //        1 => 'fatal',
-    //        'error',
-    //        'warning',
-    //        'info',
-    //        'debug',
-    //        'speed',
-    //    ];
-    //    /** @var int */
-    //    private $loggingLevelPageSpeed = 5;
-    //    /** @var bool */
-    //    private $logMonthlyRotation = true;
-    //    /** @var bool|float */
-    //    private $logProfilingStep = false;
-    //    /** @var bool|string */
-    //    private $mailForAdminEnabled = false;
 
     /**
      * @param array<mixed> $conf
@@ -68,57 +67,62 @@ class Logger extends AbstractLogger implements LoggerInterface
     public function __construct(array $conf = [], ?LoggerTime $time = null)
     {
         $this->time = ($time === null) ? (new LoggerTime()) : $time;
-        $this->conf = array_merge(
-            [ // default values
-                // 0 = send message to PHP's system logger;
-                // recommended is however 3, i.e. append to the file destination set in the field 'logging_file'
-                self::CONF_ERROR_LOG_MESSAGE_TYPE => 0,
-                // if error_log_message_type equals 3, the message is appended to this file destination (path and name)
-                self::CONF_LOGGING_FILE => '',
-                // verbosity: log up to the level set here, default=5 = debug
-                self::CONF_LOGGING_LEVEL => 5,
-                // rename or renumber, if needed
-                self::CONF_LOGGING_LEVEL_NAME => [
-                    0 => 'unknown',
-                    1 => 'fatal',
-                    'error',
-                    'warning',
-                    'info',
-                    'debug',
-                    'speed',
-                ],
-                // the logging level to which the page generation speed (i.e. error_number 6) is to be logged
-                self::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
-                // false => use logging_file with log extension as destination
-                // true => adds .Y-m.log to the logging file
-                self::CONF_LOG_MONTHLY_ROTATION => true,
-                // prefix message that took longer than profiling step (float) sec from the previous one by SLOWSTEP
-                self::CONF_LOG_PROFILING_STEP => false,
-                // A fatal error may be logged only.
-                // However, in production, set up an email address to enable error notifications.
-                self::CONF_MAIL_FOR_ADMIN_ENABLED => false,
-            ],
-            $conf
-        );
-        if (!is_int($this->conf[self::CONF_LOGGING_LEVEL])) {
-            throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
-        }
-        $this->overrideLoggingLevel = $this->conf[self::CONF_LOGGING_LEVEL];
-        //@todo replace $this->conf by the class properties
 
-        //        $this->errorLogMessageType = $conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] ?? $this->errorLogMessageType;
-        //        $this->loggingFile = $conf[self::CONF_LOGGING_FILE] ?? $this->loggingFile;
-        //        $this->loggingLevel = $conf[self::CONF_LOGGING_LEVEL] ?? $this->loggingLevel;
-        //        $this->loggingLevelName = $conf[self::CONF_LOGGING_LEVEL_NAME] ?? $this->loggingLevelName;
-        //    $this->loggingLevelPageSpeed = $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] ?? $this->loggingLevelPageSpeed;
-        //        $this->logMonthlyRotation = $conf[self::CONF_LOG_MONTHLY_ROTATION] ?? $this->logMonthlyRotation;
-        //        $this->logProfilingStep = $conf[self::CONF_LOG_PROFILING_STEP] ?? $this->logProfilingStep;
-        //        $this->mailForAdminEnabled = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED] ?? $this->mailForAdminEnabled;
-        //
-        //        if (!is_int($this->loggingLevel)) {
-        //            throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
-        //        }
-        //        $this->overrideLoggingLevel = $this->loggingLevel;
+        // prefer explicit property defaults; only override when config key is provided
+        if (isset($conf[self::CONF_ERROR_LOG_MESSAGE_TYPE])) {
+            $v = $conf[self::CONF_ERROR_LOG_MESSAGE_TYPE];
+            if (!is_int($v) && !is_numeric($v)) {
+                throw new \Psr\Log\InvalidArgumentException('The error_log_message_type MUST be an integer.');
+            }
+            $this->errorLogMessageType = (int) $v;
+        }
+        if (isset($conf[self::CONF_LOGGING_FILE])) {
+            Assert::string($conf[self::CONF_LOGGING_FILE], 'The logging_file MUST be a string.');
+            $this->loggingFile = (string) $conf[self::CONF_LOGGING_FILE];
+        }
+        if (isset($conf[self::CONF_LOGGING_LEVEL])) {
+            if (!is_int($conf[self::CONF_LOGGING_LEVEL])) {
+                throw new \Psr\Log\InvalidArgumentException('The logging_level MUST be an integer.');
+            }
+            $this->loggingLevel = (int) $conf[self::CONF_LOGGING_LEVEL];
+        }
+        if (isset($conf[self::CONF_LOGGING_LEVEL_NAME]) && is_array($conf[self::CONF_LOGGING_LEVEL_NAME])) {
+            # normalize to array<int,string>
+            $normalized = [];
+            foreach ($conf[self::CONF_LOGGING_LEVEL_NAME] as $k => $v) {
+                Assert::string($v, 'Each logging level name MUST be a string.');
+                $normalized[(int) $k] = (string) $v;
+            }
+            $this->loggingLevelName = $normalized;
+        }
+        if (isset($conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED])) {
+            Assert::integerish(
+                $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED],
+                'The logging_level_page_speed MUST be an integer.'
+            );
+            $this->loggingLevelPageSpeed = (int) $conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED];
+        }
+        if (isset($conf[self::CONF_LOG_MONTHLY_ROTATION])) {
+            $this->logMonthlyRotation = (bool) $conf[self::CONF_LOG_MONTHLY_ROTATION];
+        }
+        if (isset($conf[self::CONF_LOG_PROFILING_STEP])) {
+            $v = $conf[self::CONF_LOG_PROFILING_STEP];
+            if (!is_bool($v) && !is_float($v) && !is_int($v)) {
+                throw new \Psr\Log\InvalidArgumentException('The log_profiling_step MUST be bool or float.');
+            }
+            $this->logProfilingStep = $v;
+        }
+        if (isset($conf[self::CONF_MAIL_FOR_ADMIN_ENABLED])) {
+            $v = $conf[self::CONF_MAIL_FOR_ADMIN_ENABLED];
+            if (!is_bool($v) && !is_string($v)) {
+                throw new \Psr\Log\InvalidArgumentException(
+                    'The mail_for_admin_enabled MUST be bool or string (email).'
+                );
+            }
+            $this->mailForAdminEnabled = $v;
+        }
+
+        $this->overrideLoggingLevel = $this->loggingLevel;
     }
 
     /**
@@ -350,7 +354,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             (
                 $level <= max(
                     [
-                        $this->conf[self::CONF_LOGGING_LEVEL],
+                        $this->loggingLevel,
                         $this->overrideLoggingLevel,
                     ]
                 )
@@ -359,29 +363,20 @@ class Logger extends AbstractLogger implements LoggerInterface
             // logging_level_page_speed has at least the severity of logging_level
             || (
                 ($error_number === 6)
-                && ($this->conf[self::CONF_LOGGING_LEVEL_PAGE_SPEED] <= $this->conf[self::CONF_LOGGING_LEVEL])
+                && ($this->loggingLevelPageSpeed <= $this->loggingLevel)
             )
         ) {
             $RUNNING_TIME_PREVIOUS = $this->runningTime;
             if (
                 (
                     (($this->runningTime = round($this->time->getmicrotime() - $this->time->getPageTimestamp(), 4))
-                    - $RUNNING_TIME_PREVIOUS) > $this->conf[self::CONF_LOG_PROFILING_STEP]
-                ) && $this->conf[self::CONF_LOG_PROFILING_STEP]
+                    - $RUNNING_TIME_PREVIOUS) > $this->logProfilingStep
+                ) && $this->logProfilingStep
             ) {
                 $message = 'SLOWSTEP ' . $message; //110812, PROFILING
             }
 
-            // checks for the static code analysis
-            if (!is_array($this->conf[self::CONF_LOGGING_LEVEL_NAME])) {
-                $this->conf[self::CONF_LOGGING_LEVEL_NAME] = [];
-            }
-            if (
-                !is_string($this->conf[self::CONF_LOGGING_LEVEL_NAME][$level])
-            ) {
-                $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level] = 'non-string';
-            }
-            $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->conf[self::CONF_LOGGING_LEVEL_NAME][$level]
+            $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->loggingLevelName[$level]
                 . '] [' . $error_number . '] ['
                 . ((isset($_SERVER['SCRIPT_FILENAME']) && is_string($_SERVER['SCRIPT_FILENAME'])) //
                 ? $_SERVER['SCRIPT_FILENAME'] : 'no-script')
@@ -398,25 +393,22 @@ class Logger extends AbstractLogger implements LoggerInterface
                 . '] ';
             $result = true; //it could eventually be reset to false after calling error_log()
             // $logging_file not set and it should be
-            if (($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] == 3) && !$this->conf[self::CONF_LOGGING_FILE]) {
+            if (($this->errorLogMessageType == 3) && !$this->loggingFile) {
                 // so write into the default destination
                 $result = error_log("{$message_prefix}(error: logging_file should be set!) {$message}");
             } else {
-                $messageType = ($this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] === 0)
-                    ? $this->conf[self::CONF_ERROR_LOG_MESSAGE_TYPE] : 3;
-                if (!is_string($this->conf[self::CONF_LOGGING_FILE])) {
-                    $this->conf[self::CONF_LOGGING_FILE] = './error_log'; // a forced default
-                }
-                $result = $this->conf[self::CONF_LOG_MONTHLY_ROTATION]
+                $messageType = ($this->errorLogMessageType === 0)
+                    ? $this->errorLogMessageType : 3;
+                $result = $this->logMonthlyRotation
                     ? error_log(
                         $message_prefix . $message . (($messageType != 0) ? PHP_EOL : ''),
                         $messageType,
-                        "{$this->conf[self::CONF_LOGGING_FILE]}." . date('Y-m') . '.log'
+                        "{$this->loggingFile}." . date('Y-m') . '.log'
                     ) // writes into a monthly rotating file
                     : error_log(
                         $message_prefix . $message . PHP_EOL,
                         $messageType,
-                        "{$this->conf[self::CONF_LOGGING_FILE]}.log"
+                        "{$this->loggingFile}.log"
                     ); // writes into one file
             }
             if ($result === false) {
@@ -424,13 +416,13 @@ class Logger extends AbstractLogger implements LoggerInterface
             }
             // mailto admin. 'mail_for_admin_enabled' has to be an email
             if (
-                $level === 1 && $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED] //
-                && is_string($this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED])
+                $level === 1 && $this->mailForAdminEnabled //
+                && is_string($this->mailForAdminEnabled)
             ) {
                 $result2 = error_log(
                     $message_prefix . $message . PHP_EOL,
                     1,
-                    $this->conf[self::CONF_MAIL_FOR_ADMIN_ENABLED]
+                    $this->mailForAdminEnabled
                 );
                 if ($result2 === false) {
                     throw new ErrorLogFailureException('error_log() mailing failed');

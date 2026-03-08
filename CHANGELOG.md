@@ -11,9 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
-- package limited to the tested PHP versions, i.e. "php": ">=7.1 <8.5"
-- GitHub Actions version bump to super-linter v8.1.0
-
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
@@ -21,6 +18,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [2.0.5] - 2026-03-08
+
+fix: remove support below PHP/7.2, because of CVE-2026-24765
+
+### Changed
+
+- package limited to the tested PHP versions, i.e. "php": ">=7.2 <8.6"
+- GitHub Actions version bump to super-linter v8.5.0
+- Logger refactor: replaced legacy protected $conf array with explicit, typed class properties (errorLogMessageType, loggingFile, loggingLevel, loggingLevelName, loggingLevelPageSpeed, logMonthlyRotation, logProfilingStep, mailForAdminEnabled) to improve type safety and static analysis compatibility.
+- Constructor now prefers property defaults and only overrides properties when config keys are present; config values are validated/narrowed before assignment to satisfy PHPStan and avoid unsafe casts.
+- Introduced WebMozart Assert for concise runtime validations where appropriate.
+
+### Added
+
+- PHPStan-friendly type hints and PHPDoc improvements for Logger properties (e.g. array<int,string> for loggingLevelName).
+
+### Security
+
+- fix: remove support below PHP/7.2, because of CVE-2026-24765
 
 ## [2.0.4] - 2025-10-23
 
@@ -83,7 +100,8 @@ Stable version for `"php": "^5.3 || ^7.0"`
 
 - A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
 
-[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.4...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.5...HEAD
+[2.0.5]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.1...v2.0.2
