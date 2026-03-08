@@ -376,15 +376,6 @@ class Logger extends AbstractLogger implements LoggerInterface
                 $message = 'SLOWSTEP ' . $message; //110812, PROFILING
             }
 
-            // checks for the static code analysis
-            if (!is_array($this->loggingLevelName)) {
-                $this->loggingLevelName = [];
-            }
-            if (
-                !is_string($this->loggingLevelName[$level])
-            ) {
-                $this->loggingLevelName[$level] = 'non-string';
-            }
             $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->loggingLevelName[$level]
                 . '] [' . $error_number . '] ['
                 . ((isset($_SERVER['SCRIPT_FILENAME']) && is_string($_SERVER['SCRIPT_FILENAME'])) //
@@ -408,9 +399,6 @@ class Logger extends AbstractLogger implements LoggerInterface
             } else {
                 $messageType = ($this->errorLogMessageType === 0)
                     ? $this->errorLogMessageType : 3;
-                if (!is_string($this->loggingFile)) {
-                    $this->loggingFile = './error_log'; // a forced default
-                }
                 $result = $this->logMonthlyRotation
                     ? error_log(
                         $message_prefix . $message . (($messageType != 0) ? PHP_EOL : ''),
