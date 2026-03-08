@@ -35,11 +35,6 @@ fix: remove support below PHP/7.2, because of CVE-2026-24765
 
 - PHPStan-friendly type hints and PHPDoc improvements for Logger properties (e.g. array<int,string> for loggingLevelName).
 
-### Fixed
-
-- Resolved PHPStan errors by narrowing mixed config inputs and removing leftover references to the removed $conf property.
-- Ensured php -l and phpunit pass locally across supported PHP versions.
-
 ### Security
 
 - fix: remove support below PHP/7.2, because of CVE-2026-24765

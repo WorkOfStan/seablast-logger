@@ -26,17 +26,13 @@ class Logger extends AbstractLogger implements LoggerInterface
     public const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
     public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
 
-    /** @var int */
-    // 0 = send message to PHP's system logger; recommended is however 3 (append to file)
+    /** @var int 0 = send message to PHP's system logger; recommended is however 3 (append to file) */
     private $errorLogMessageType = 0;
-    /** @var string */
-    // if errorLogMessageType equals 3, message is appended to this file destination (path and name)
+    /** @var string if errorLogMessageType equals 3, message is appended to this file destination (path and name) */
     private $loggingFile = '';
-    /** @var int */
-    // verbosity: log up to this level, default=5 (debug)
+    /** @var int verbosity: log up to this level, default=5 (debug) */
     private $loggingLevel = 5;
-    /** @var array<int,string> */
-    // rename or renumber, if needed
+    /** @var array<int,string> Note: rename or renumber, if needed */
     private $loggingLevelName = [
         0 => 'unknown',
         1 => 'fatal',
@@ -46,17 +42,13 @@ class Logger extends AbstractLogger implements LoggerInterface
         5 => 'debug',
         6 => 'speed',
     ];
-    /** @var int */
-    // the logging level to which page generation speed (error_number 6) is to be logged
+    /** @var int the logging level to which page generation speed (error_number 6) is to be logged */
     private $loggingLevelPageSpeed = 5;
-    /** @var bool */
-    // false => use loggingFile as destination; true => adds .Y-m.log suffix for monthly rotation
+    /** @var bool false => use loggingFile as destination; true => adds .Y-m.log suffix for monthly rotation */
     private $logMonthlyRotation = true;
-    /** @var bool|float */
-    // prefix message that took longer than profiling step (float seconds) by SLOWSTEP
+    /** @var bool|float prefix message that took longer than profiling step (float seconds) by SLOWSTEP */
     private $logProfilingStep = false;
-    /** @var bool|string */
-    // when string, treated as admin email for level 1 notifications
+    /** @var bool|string when string, treated as admin email for level <=1 notifications */
     private $mailForAdminEnabled = false;
 
     /** @var int */
@@ -98,7 +90,7 @@ class Logger extends AbstractLogger implements LoggerInterface
             # normalize to array<int,string>
             $normalized = [];
             foreach ($conf[self::CONF_LOGGING_LEVEL_NAME] as $k => $v) {
-                Assert::string($v, 'Each logging level name must be a string.');
+                Assert::string($v, 'Each logging level name MUST be a string.');
                 $normalized[(int) $k] = (string) $v;
             }
             $this->loggingLevelName = $normalized;
