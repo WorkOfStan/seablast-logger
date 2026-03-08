@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [2.0.5] - 2026-03-01
+## [2.0.5] - 2026-03-08
 
 fix: remove support below PHP/7.2, because of CVE-2026-24765
 
