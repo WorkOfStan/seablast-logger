@@ -6,21 +6,23 @@ The logging level verbosity can be tailored to suit different environments.
 For instance, in a development environment, the logger can be configured to log more detailed information compared to a production environment, all without changing your code.
 Simply adjust the verbosity.
 
-The `logging_level` is the most important setting. These parameters can be configured when instantiating the logger:
+Internally, messages are written through PHP's `error_log()` function, either to PHP's system logger or to configured log files.
+
+The `logging_level` controls verbosity. Lower numbers are more severe, and the logger writes messages whose level is less than or equal to the configured level. These parameters can be configured when instantiating the logger:
 
 ```php
 use Seablast\Logger\Logger;
 $conf = array(
     // THESE ARE THE DEFAULT SETTINGS
-    // 0 = send message to PHP's system logger; recommended is however 3, i.e. append to the file destination set in the field 'logging_file'
+    // 0 = send message to PHP's system logger; 3 appends to the file destination set in 'logging_file'
     Logger::CONF_ERROR_LOG_MESSAGE_TYPE => 0,
     // if error_log_message_type equals 3, the message is appended to this file destination (path and name)
     Logger::CONF_LOGGING_FILE => '',
-    // verbosity: log up to the level set here, default=5 = debug
+    // verbosity: log up to the level set here, default=5 = debug; level 6 = speed is ignored by default
     Logger::CONF_LOGGING_LEVEL => 5,
     // rename or renumber, if needed
     Logger::CONF_LOGGING_LEVEL_NAME => array(0 => 'unknown', 1 => 'fatal', 'error', 'warning', 'info', 'debug', 'speed'),
-    // the logging level to which the page generation speed (i.e. error_number 6) is to be logged
+    // minimum configured verbosity needed to log page-speed messages, i.e. messages with error_number 6
     Logger::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
     // false => use logging_file with log extension as destination; true => adds .Y-m.log to the logging file
     Logger::CONF_LOG_MONTHLY_ROTATION => true,
@@ -33,6 +35,8 @@ $logger = new Logger($conf);
 ```
 
 See [test.php](test.php) for usage.
+
+When using `log()` directly, pass a standard PSR-3 string level such as `LogLevel::INFO` or a numeric level from `CONF_LOGGING_LEVEL_NAME`. The optional context key `error_number`, or the first numeric context value, selects the category written in the log prefix; other PSR-3 context values are left untouched and are not interpolated into the message.
 
 By default the logger logs the following levels of information:
 
@@ -50,12 +54,12 @@ Note: Outputting log messages to the screen is not supported.
 
 ## Runtime adjustment
 
-- method logAtLeastToLevel(int $level) may change the verbosity level above the level set when instatiating.
+- method logAtLeastToLevel(int $level) may raise the verbosity level above the level set when instantiating.
 - method setUser(int|string $user) may add the user identification to the error messages
 
 ## Tracy\Logger::log wrapper
 
-Since Nette\Tracy::v2.6.0, i.e. `"php": ">=7.1"` it is possible to use a PSR-3 adapter, allowing for integration of [seablast/logger](https://github.com/WorkOfStan/seablast-logger).
+Since Tracy 2.6.0 it is possible to use a PSR-3 adapter, allowing integration with [seablast/logger](https://github.com/WorkOfStan/seablast-logger). This package currently keeps `"php": ">=7.2 <8.6"`.
 
 ```php
 $logger = new \Seablast\Logger\Logger();
