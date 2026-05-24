@@ -339,6 +339,7 @@ class Logger extends AbstractLogger implements LoggerInterface
         //    $this->error($message);
         //}
         $level = $this->normalizeLevel($level);
+        $message = $this->normalizeMessage($message);
 
         // if context array is set then get the value of the 'error_number' field or the first element
         $error_number = $this->getContextErrorNumber($context);
@@ -440,6 +441,24 @@ class Logger extends AbstractLogger implements LoggerInterface
         }
 
         return $level;
+    }
+
+    /**
+     * @param mixed $message
+     *
+     * @return string
+     */
+    private function normalizeMessage($message): string
+    {
+        if (is_string($message)) {
+            return $message;
+        }
+
+        if (is_object($message) && method_exists($message, '__toString')) {
+            return (string) $message;
+        }
+
+        throw new \Psr\Log\InvalidArgumentException('The log message MUST be a string or stringable object.');
     }
 
     /**

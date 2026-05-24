@@ -42,6 +42,7 @@ refactor: fix PSR-3 context handling
 - Fixed PSR-3 context handling so non-numeric context values no longer get cast while resolving the optional log error number.Allowing for `$logger->info('Failed request', ['exception' => $e]);` extra data.
 - Fixed unsupported string log levels to throw `Psr\Log\InvalidArgumentException` instead of writing a secondary log entry.
 - Fixed logging level names to fall back to `unknown` for numeric levels without a configured name.
+- Fixed log message normalization so PHPStan can prove messages are strings before writing to `error_log()`.
 
 ## [2.0.5] - 2026-03-08
 
