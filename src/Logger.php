@@ -26,6 +26,18 @@ class Logger extends AbstractLogger implements LoggerInterface
     public const CONF_LOG_PROFILING_STEP = 'log_profiling_step';
     public const CONF_MAIL_FOR_ADMIN_ENABLED = 'mail_for_admin_enabled';
 
+    /** @var array<string,int> psr log levels to numbered severity */
+    private const PSR_LEVEL_TO_LOGGING_LEVEL = [
+        LogLevel::EMERGENCY => 0,
+        LogLevel::ALERT => 1,
+        LogLevel::CRITICAL => 1,
+        LogLevel::ERROR => 2,
+        LogLevel::WARNING => 3,
+        LogLevel::NOTICE => 4,
+        LogLevel::INFO => 4,
+        LogLevel::DEBUG => 5,
+    ];
+
     /** @var int 0 = send message to PHP's system logger; recommended is however 3 (append to file) */
     private $errorLogMessageType = 0;
     /** @var string if errorLogMessageType equals 3, message is appended to this file destination (path and name) */
@@ -61,7 +73,9 @@ class Logger extends AbstractLogger implements LoggerInterface
     private $user = 'unidentified';
 
     /**
-     * @param array<mixed> $conf
+     * Config is keyed by CONF_* string constants, so array<string,mixed> lets static analysis
+     * reject positional integer-keyed config where array<mixed> would only describe values.
+     * @param array<string,mixed> $conf
      * @param ?LoggerTime $time
      */
     public function __construct(array $conf = [], ?LoggerTime $time = null)
@@ -86,7 +100,10 @@ class Logger extends AbstractLogger implements LoggerInterface
             }
             $this->loggingLevel = (int) $conf[self::CONF_LOGGING_LEVEL];
         }
-        if (isset($conf[self::CONF_LOGGING_LEVEL_NAME]) && is_array($conf[self::CONF_LOGGING_LEVEL_NAME])) {
+        if (isset($conf[self::CONF_LOGGING_LEVEL_NAME])) {
+            if (!is_array($conf[self::CONF_LOGGING_LEVEL_NAME])) {
+                throw new \Psr\Log\InvalidArgumentException('The logging_level_name MUST be an array.');
+            }
             # normalize to array<int,string>
             $normalized = [];
             foreach ($conf[self::CONF_LOGGING_LEVEL_NAME] as $k => $v) {
@@ -162,8 +179,8 @@ class Logger extends AbstractLogger implements LoggerInterface
     /**
      * System is unusable.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -178,8 +195,8 @@ class Logger extends AbstractLogger implements LoggerInterface
      * Example: Entire website down, database unavailable, etc. This should
      * trigger the SMS alerts and wake you up.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -193,8 +210,8 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * Example: Application component unavailable, unexpected exception.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -207,8 +224,8 @@ class Logger extends AbstractLogger implements LoggerInterface
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -223,8 +240,8 @@ class Logger extends AbstractLogger implements LoggerInterface
      * Example: Use of deprecated APIs, poor use of an API, undesirable things
      * that are not necessarily wrong.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -236,8 +253,8 @@ class Logger extends AbstractLogger implements LoggerInterface
     /**
      * Normal but significant events.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -251,8 +268,8 @@ class Logger extends AbstractLogger implements LoggerInterface
      *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -264,8 +281,8 @@ class Logger extends AbstractLogger implements LoggerInterface
     /**
      * Detailed debug information.
      *
-     * @param string $message
-     * @param array<int> $context
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
      *
      * @return void
      */
@@ -284,9 +301,9 @@ class Logger extends AbstractLogger implements LoggerInterface
      * [username@gethostbyaddr($_SERVER['REMOTE_ADDR'])] [sec since page start] $message
      *
      * @param mixed $level int|string Error level
-     * @param string $message Message to be logged
-     * @param array<int> $context OPTIONAL To enable error log filtering 'error_number' field expected
-     *   or the first element element expected containing number of error category
+     * @param mixed $message Message to be logged; PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context OPTIONAL To enable error log filtering 'error_number' field expected
+     *   or the first numeric element expected containing number of error category
      *
      * @return void
      *
@@ -295,7 +312,7 @@ class Logger extends AbstractLogger implements LoggerInterface
      *  1-5 Reserved
      *  6 Speed<br/>
      *  7-9 Reserved<br/>
-     *  10 Authentization<br/>
+     *  10 Authentication<br/>
      *  11 MySQL<br/>
      *  12 Domain name<br/>
      *  13 Tampered URL or ID<br/>
@@ -321,43 +338,15 @@ class Logger extends AbstractLogger implements LoggerInterface
         //        . print_r($message, true) . ')';
         //    $this->error($message);
         //}
-        // psr log levels to numbered severity
-        $psr2int = [
-            LogLevel::EMERGENCY => 0,
-            LogLevel::ALERT => 1,
-            LogLevel::CRITICAL => 1,
-            LogLevel::ERROR => 2,
-            LogLevel::WARNING => 3,
-            LogLevel::NOTICE => 4,
-            LogLevel::INFO => 4,
-            LogLevel::DEBUG => 5,
-        ];
-        if (is_string($level)) {
-            if (array_key_exists($level, $psr2int)) {
-                $level = $psr2int[$level];
-            } else {
-                $this->error('level has unexpected string value ' . $level . ' message: ' . $message);
-                $level = 0;
-            }
-        } elseif (!is_int($level)) {
-            $this->error('level has unexpected type ' . gettype($level) . ' message: ' . $message);
-            $level = 0;
-        }
+        $level = $this->normalizeLevel($level);
 
         // if context array is set then get the value of the 'error_number' field or the first element
-        $error_number = ($context === [])
-            ? 0
-            : (isset($context['error_number']) ? (int) $context['error_number'] : (int) reset($context));
+        $error_number = $this->getContextErrorNumber($context);
 
         if (
             // log 0=unknown/default 1=fatal 2=error 3=warning 4=info 5=debug 6=speed according to $level
             (
-                $level <= max(
-                    [
-                        $this->loggingLevel,
-                        $this->overrideLoggingLevel,
-                    ]
-                )
+                $level <= max($this->loggingLevel, $this->overrideLoggingLevel)
             )
             // or log page_speed everytime error_number equals 6 and
             // logging_level_page_speed has at least the severity of logging_level
@@ -376,7 +365,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 $message = 'SLOWSTEP ' . $message; //110812, PROFILING
             }
 
-            $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->loggingLevelName[$level]
+            $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->getLoggingLevelName($level)
                 . '] [' . $error_number . '] ['
                 . ((isset($_SERVER['SCRIPT_FILENAME']) && is_string($_SERVER['SCRIPT_FILENAME'])) //
                 ? $_SERVER['SCRIPT_FILENAME'] : 'no-script')
@@ -430,6 +419,67 @@ class Logger extends AbstractLogger implements LoggerInterface
             }
         }
     }
+
+    /**
+     * @param mixed $level
+     *
+     * @return int
+     */
+    private function normalizeLevel($level): int
+    {
+        if (is_string($level)) {
+            if (array_key_exists($level, self::PSR_LEVEL_TO_LOGGING_LEVEL)) {
+                return self::PSR_LEVEL_TO_LOGGING_LEVEL[$level];
+            }
+            throw new \Psr\Log\InvalidArgumentException('The log level "' . $level . '" is not supported.');
+        }
+        if (!is_int($level)) {
+            throw new \Psr\Log\InvalidArgumentException(
+                'The log level type "' . gettype($level) . '" is not supported.'
+            );
+        }
+
+        return $level;
+    }
+
+    /**
+     * @param array<int|string,mixed> $context
+     *
+     * @return int
+     */
+    private function getContextErrorNumber(array $context): int
+    {
+        if ($context === []) {
+            return 0;
+        }
+
+        if (
+            isset($context['error_number'])
+            && (is_int($context['error_number']) || is_numeric($context['error_number']))
+        ) {
+            return (int) $context['error_number'];
+        }
+
+        $firstValue = reset($context);
+        if (is_int($firstValue) || is_numeric($firstValue)) {
+            return (int) $firstValue;
+        }
+
+        return 0;
+    }
+
+    /**
+     * @return string
+     */
+    private function getLoggingLevelName(int $level): string
+    {
+        if (array_key_exists($level, $this->loggingLevelName)) {
+            return $this->loggingLevelName[$level];
+        }
+
+        return $this->loggingLevelName[0] ?? 'unknown';
+    }
+
     /** Alternative way:
       Logging levels
       Log level   Description                                                                       Set bit

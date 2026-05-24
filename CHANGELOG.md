@@ -19,6 +19,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+## [2.0.6] - 2026-05-24
+
+refactor: fix PSR-3 context handling
+
+### Added
+
+- Added `AGENTS.md` with repository workflow notes for future coding agents.
+- Added PHPUnit coverage for `Logger` file output, verbosity filtering, unsupported PSR-3 levels, and non-numeric context values.
+
+### Changed
+
+- Clarified package and README descriptions around `error_log()`, speed-level behavior, PSR-3 context handling, and the supported PHP range.
+- Documented why `Logger` constructor configuration is typed as `array<string,mixed>`.
+
+### Removed
+
+- Removed the no-op `LoggerTimeTest::tearDown()` hook.
+
+### Fixed
+
+- Fixed PSR-3 context handling so non-numeric context values no longer get cast while resolving the optional log error number.Allowing for `$logger->info('Failed request', ['exception' => $e]);` extra data.
+- Fixed unsupported string log levels to throw `Psr\Log\InvalidArgumentException` instead of writing a secondary log entry.
+- Fixed logging level names to fall back to `unknown` for numeric levels without a configured name.
+
 ## [2.0.5] - 2026-03-08
 
 fix: remove support below PHP/7.2, because of CVE-2026-24765
@@ -100,7 +124,8 @@ Stable version for `"php": "^5.3 || ^7.0"`
 
 - A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
 
-[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.5...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.6...HEAD
+[2.0.6]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.2...v2.0.3

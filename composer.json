@@ -1,6 +1,6 @@
 {
   "name": "seablast/logger",
-  "description": "A PSR-3 compliant logger with adjustable verbosity.",
+  "description": "A PSR-3 compliant error_log() logger with adjustable verbosity.",
   "type": "library",
   "require": {
     "php": ">=7.2 <8.6",
