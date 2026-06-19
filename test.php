@@ -6,14 +6,23 @@ use Seablast\Logger\Logger;
 
 require 'vendor/autoload.php';
 
+$logDir = __DIR__ . '/log';
+if (!is_dir($logDir) && !mkdir($logDir, 0750, true) && !is_dir($logDir)) {
+    throw new RuntimeException(sprintf('Unable to create log directory "%s".', $logDir));
+}
+if (!is_writable($logDir)) {
+    throw new RuntimeException(sprintf('Log directory "%s" is not writable.', $logDir));
+}
+$logFile = $logDir . '/error_log';
+
 // Initialize the logger
 $conf = [
     Logger::CONF_ERROR_LOG_MESSAGE_TYPE => 3,
-    Logger::CONF_LOGGING_FILE => './error_log', // extension .log will be added automatically
+    Logger::CONF_LOGGING_FILE => $logFile, // extension .log will be added automatically
     Logger::CONF_LOGGING_LEVEL => 0, // start with logging almost nothing for purpose of test looping
     Logger::CONF_LOGGING_LEVEL_PAGE_SPEED => 5,
     Logger::CONF_LOG_MONTHLY_ROTATION => true,
-    Logger::CONF_LOG_PROFILING_STEP => 0.00048,
+    Logger::CONF_LOG_PROFILING_STEP => 0.00048, // very short to actually log all lines as SLOWSTEP
     Logger::CONF_MAIL_FOR_ADMIN_ENABLED => false,
 ];
 $logger = new Logger($conf);

@@ -8,7 +8,7 @@ Keep the Composer PHP constraint exactly as `"php": ">=7.2 <8.6"` unless the use
 
 ## Change Rules
 
-- Never remove comments. You may update comments for clarity, translate them to English, or remove a TODO only when the TODO is actually solved.
+- Never remove comments. You may update comments for clarity, translate them to English, or remove a `TODO` only when the `TODO` is actually solved.
 - Update `CHANGELOG.md` in English for notable changes.
 - Keep docs and examples aligned with `src/Logger.php`, especially logging levels, file rotation, and PHP version support.
 - Check security implications when changing logging behavior. Treat log destination paths, email destinations, host lookups, and user-controlled log text carefully.
