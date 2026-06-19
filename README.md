@@ -37,7 +37,7 @@ $logger = new Logger($conf);
 
 See [test.php](test.php) for usage.
 
-Security note: `logging_file` is a filesystem destination. Keep it under application control, do not fill it directly from user input, environment values, or request data without validation, and prefer a directory outside the public web root so logs cannot be downloaded by clients.
+Security note: `logging_file` is a filesystem destination. Keep it under application control, do not fill it directly from user input, environment values, or request data without validation, and prefer a directory outside the public web root so logs cannot be downloaded by clients. Log entries can include diagnostic data such as script paths and full request URIs, including query strings, so treat log files as sensitive data available only to authorized operators.
 
 When using `log()` directly, pass a standard PSR-3 string level such as `LogLevel::INFO` or a numeric level from `CONF_LOGGING_LEVEL_NAME`. The optional context key `error_number`, or the first numeric context value, selects the category written in the log prefix; other PSR-3 context values are left untouched and are not interpolated into the message.
 

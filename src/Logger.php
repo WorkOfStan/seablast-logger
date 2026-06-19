@@ -370,9 +370,12 @@ class Logger extends AbstractLogger implements LoggerInterface
             $scriptFilename = (isset($_SERVER['SCRIPT_FILENAME']) && is_string($_SERVER['SCRIPT_FILENAME'])) //
                 ? $this->sanitizeLogText($_SERVER['SCRIPT_FILENAME']) : 'no-script';
             $user = $this->sanitizeLogText($this->user);
+            // PHPUnit test (CLI) does not set REMOTE_ADDR
+            // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to just log IP?
             $resolvedHost = (isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) //
                 ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-';
             $host = is_string($resolvedHost) ? $this->sanitizeLogText($resolvedHost) : '-';
+            // PHPUnit test (CLI) does not set REQUEST_URI
             $requestUri = (isset($_SERVER['REQUEST_URI']) && is_string($_SERVER['REQUEST_URI'])) //
                 ? $this->sanitizeLogText($_SERVER['REQUEST_URI']) : '-';
 
@@ -382,11 +385,8 @@ class Logger extends AbstractLogger implements LoggerInterface
                 . $scriptFilename
                 . '] ['
                 . $user . '@'
-                // PHPUnit test (CLI) does not set REMOTE_ADDR
-                // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to just log IP?
                 . $host
-                . '] [' . $this->runningTime . '] ['
-                // PHPUnit test (CLI) does not set REQUEST_URI
+                . '] [' . $this->runningTime . '] ['                
                 . $requestUri
                 . '] ';
             $result = true; //it could eventually be reset to false after calling error_log()

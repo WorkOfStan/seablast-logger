@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Changed` for changes in existing functionality
 
 - Clarified package and README descriptions around `error_log()`, speed-level behavior, PSR-3 context handling, and the supported PHP range.
+- Describe `FixedLoggerTime` as a deterministic helper for `LoggerTest.php`.
 - Documented why `Logger` constructor configuration is typed as `array<string,mixed>`.
 
 ### `Deprecated` for soon-to-be removed features
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+- Move `FixedLoggerTime` into its own test helper file to satisfy PHPCS class-per-file rules.
 - Fix PHPStan findings in logger tests after adding log-injection coverage.
 - Fixed PSR-3 context handling so non-numeric context values no longer get cast while resolving the optional log error number.Allowing for `$logger->info('Failed request', ['exception' => $e]);` extra data.
 - Fixed unsupported string log levels to throw `Psr\Log\InvalidArgumentException` instead of writing a secondary log entry.
@@ -32,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
+- Use a runtime-created log directory for the demo logger destination.
 - Warn that `logging_file` must stay trusted and outside the public web directory.
 - Escape control characters in log-line fields to prevent forged log entries.
 - Promote `webmozart/assert` to runtime dependencies so production installs include the assertion class used by `Logger`.

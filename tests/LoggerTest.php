@@ -7,7 +7,6 @@ namespace Seablast\Logger\Tests;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\InvalidArgumentException;
 use Seablast\Logger\Logger;
-use Seablast\Logger\LoggerTime;
 
 class LoggerTest extends TestCase
 {
@@ -218,24 +217,5 @@ class LoggerTest extends TestCase
             }
             usleep(10000);
         }
-    }
-}
-
-class FixedLoggerTime extends LoggerTime
-{
-    /**
-     * @return float
-     */
-    public function getmicrotime(): float
-    {
-        return 100.1234;
-    }
-
-    /**
-     * @return float
-     */
-    public function getPageTimestamp(): float
-    {
-        return 100.0;
     }
 }
