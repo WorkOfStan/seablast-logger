@@ -9,28 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Added` for new features
 
-- Added `AGENTS.md` with repository workflow notes for future coding agents.
-- Added PHPUnit coverage for `Logger` file output, verbosity filtering, unsupported PSR-3 levels, and non-numeric context values.
-
 ### `Changed` for changes in existing functionality
 
-- Clarified package and README descriptions around `error_log()`, speed-level behavior, PSR-3 context handling, and the supported PHP range.
 - Describe `FixedLoggerTime` as a deterministic helper for `LoggerTest.php`.
-- Documented why `Logger` constructor configuration is typed as `array<string,mixed>`.
 
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
-- Removed the no-op `LoggerTimeTest::tearDown()` hook.
-
 ### `Fixed` for any bugfixes
 
 - Move `FixedLoggerTime` into its own test helper file to satisfy PHPCS class-per-file rules.
 - Fix PHPStan findings in logger tests after adding log-injection coverage.
-- Fixed PSR-3 context handling so non-numeric context values no longer get cast while resolving the optional log error number.Allowing for `$logger->info('Failed request', ['exception' => $e]);` extra data.
-- Fixed unsupported string log levels to throw `Psr\Log\InvalidArgumentException` instead of writing a secondary log entry.
-- Fixed logging level names to fall back to `unknown` for numeric levels without a configured name.
 
 ### `Security` in case of vulnerabilities
 
@@ -39,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Escape control characters in log-line fields to prevent forged log entries.
 - Promote `webmozart/assert` to runtime dependencies so production installs include the assertion class used by `Logger`.
 
-## [2.0.6] - 2026-05-24
+## [2.0.6] - 2026-06-19
 
 refactor: fix PSR-3 context handling
 
@@ -50,7 +40,7 @@ refactor: fix PSR-3 context handling
 
 ### Changed
 
-- Clarified package and README descriptions around `error_log()`, speed-level behavior, PSR-3 context handling, and the supported PHP range.
+- Clarified package and [README.md](README.md) descriptions around `error_log()`, speed-level behavior, PSR-3 context handling, and the supported PHP range.
 - Documented why `Logger` constructor configuration is typed as `array<string,mixed>`.
 
 ### Removed
