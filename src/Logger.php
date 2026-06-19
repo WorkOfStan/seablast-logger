@@ -386,7 +386,7 @@ class Logger extends AbstractLogger implements LoggerInterface
                 . '] ['
                 . $user . '@'
                 . $host
-                . '] [' . $this->runningTime . '] ['                
+                . '] [' . $this->runningTime . '] ['
                 . $requestUri
                 . '] ';
             $result = true; //it could eventually be reset to false after calling error_log()
