@@ -365,21 +365,29 @@ class Logger extends AbstractLogger implements LoggerInterface
             ) {
                 $message = 'SLOWSTEP ' . $message; //110812, PROFILING
             }
+            $message = $this->sanitizeLogText($message);
 
-            $message_prefix = '[' . date('d-M-Y H:i:s') . '] [' . $this->getLoggingLevelName($level)
+            $scriptFilename = (isset($_SERVER['SCRIPT_FILENAME']) && is_string($_SERVER['SCRIPT_FILENAME'])) //
+                ? $this->sanitizeLogText($_SERVER['SCRIPT_FILENAME']) : 'no-script';
+            $user = $this->sanitizeLogText($this->user);
+            $resolvedHost = (isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) //
+                ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-';
+            $host = is_string($resolvedHost) ? $this->sanitizeLogText($resolvedHost) : '-';
+            $requestUri = (isset($_SERVER['REQUEST_URI']) && is_string($_SERVER['REQUEST_URI'])) //
+                ? $this->sanitizeLogText($_SERVER['REQUEST_URI']) : '-';
+
+            $message_prefix = '[' . date('d-M-Y H:i:s') . '] ['
+                . $this->sanitizeLogText($this->getLoggingLevelName($level))
                 . '] [' . $error_number . '] ['
-                . ((isset($_SERVER['SCRIPT_FILENAME']) && is_string($_SERVER['SCRIPT_FILENAME'])) //
-                ? $_SERVER['SCRIPT_FILENAME'] : 'no-script')
+                . $scriptFilename
                 . '] ['
-                . $this->user . '@'
+                . $user . '@'
                 // PHPUnit test (CLI) does not set REMOTE_ADDR
                 // TODO what if gethostbyaddr can't resolve the IP? And wouldn't be faster to just log IP?
-                . ((isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) //
-                ? gethostbyaddr($_SERVER['REMOTE_ADDR']) : '-')
+                . $host
                 . '] [' . $this->runningTime . '] ['
                 // PHPUnit test (CLI) does not set REQUEST_URI
-                . ((isset($_SERVER['REQUEST_URI']) && is_string($_SERVER['REQUEST_URI'])) //
-                ? $_SERVER['REQUEST_URI'] : '-')
+                . $requestUri
                 . '] ';
             $result = true; //it could eventually be reset to false after calling error_log()
             // $logging_file not set and it should be
@@ -459,6 +467,32 @@ class Logger extends AbstractLogger implements LoggerInterface
         }
 
         throw new \Psr\Log\InvalidArgumentException('The log message MUST be a string or stringable object.');
+    }
+
+    /**
+     * @return string
+     */
+    private function sanitizeLogText(string $value): string
+    {
+        $sanitized = preg_replace_callback(
+            '/[\x00-\x1F\x7F]/',
+            /** @param array<int,string> $matches */
+            static function (array $matches): string {
+                switch ($matches[0]) {
+                    case "\r":
+                        return '\\r';
+                    case "\n":
+                        return '\\n';
+                    case "\t":
+                        return '\\t';
+                }
+
+                return sprintf('\\x%02X', ord($matches[0]));
+            },
+            $value
+        );
+
+        return ($sanitized === null) ? $value : $sanitized;
     }
 
     /**

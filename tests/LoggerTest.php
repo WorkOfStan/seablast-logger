@@ -110,6 +110,53 @@ class LoggerTest extends TestCase
     /**
      * @return void
      */
+    public function testControlCharactersAreEscapedInLogLineFields(): void
+    {
+        $baseFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'logger';
+        $_SERVER['SCRIPT_FILENAME'] = "script\r\nforged.php";
+        $_SERVER['REQUEST_URI'] = "/safe\turi\x1Fnext\nfake";
+        $logger = new Logger(
+            [
+                Logger::CONF_ERROR_LOG_MESSAGE_TYPE => 3,
+                Logger::CONF_LOGGING_FILE => $baseFile,
+                Logger::CONF_LOGGING_LEVEL => 4,
+                Logger::CONF_LOGGING_LEVEL_NAME => [
+                    0 => 'unknown',
+                    1 => 'fatal',
+                    2 => 'error',
+                    3 => 'warning',
+                    4 => "info\nforged",
+                    5 => 'debug',
+                    6 => 'speed',
+                ],
+                Logger::CONF_LOG_MONTHLY_ROTATION => false,
+            ],
+            new FixedLoggerTime()
+        );
+        $logger->setUser("user\rforged");
+
+        $logger->info("Message\nforged\ragain\twith\x1Funit");
+
+        $contents = file_get_contents($baseFile . '.log');
+        self::assertIsString($contents);
+        self::assertStringContainsString(
+            '] [info\\nforged] [0] [script\\r\\nforged.php] [user\\rforged@-] [0.1234] '
+            . '[/safe\\turi\\x1Fnext\\nfake] Message\\nforged\\ragain\\twith\\x1Funit',
+            $contents
+        );
+        self::assertSame(1, substr_count($contents, PHP_EOL));
+
+        $lineWithoutEnding = substr($contents, 0, -strlen(PHP_EOL));
+        self::assertIsString($lineWithoutEnding);
+        self::assertStringNotContainsString("\r", $lineWithoutEnding);
+        self::assertStringNotContainsString("\n", $lineWithoutEnding);
+        self::assertStringNotContainsString("\t", $lineWithoutEnding);
+        self::assertStringNotContainsString("\x1F", $lineWithoutEnding);
+    }
+
+    /**
+     * @return void
+     */
     public function testUnsupportedPsrLevelThrows(): void
     {
         $baseFile = $this->tmpDir . DIRECTORY_SEPARATOR . 'logger';
