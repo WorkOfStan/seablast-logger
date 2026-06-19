@@ -11,25 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
-- Describe `FixedLoggerTime` as a deterministic helper for `LoggerTest.php`.
-
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
 
 ### `Fixed` for any bugfixes
 
-- Move `FixedLoggerTime` into its own test helper file to satisfy PHPCS class-per-file rules.
-- Fix PHPStan findings in logger tests after adding log-injection coverage.
-
 ### `Security` in case of vulnerabilities
 
-- Use a runtime-created log directory for the demo logger destination.
-- Warn that `logging_file` must stay trusted and outside the public web directory.
-- Escape control characters in log-line fields to prevent forged log entries.
-- Promote `webmozart/assert` to runtime dependencies so production installs include the assertion class used by `Logger`.
-
-## [2.0.6] - 2026-06-19
+## [2.0.6] - 2026-06-20
 
 refactor: fix PSR-3 context handling
 
@@ -42,6 +32,7 @@ refactor: fix PSR-3 context handling
 
 - Clarified package and [README.md](README.md) descriptions around `error_log()`, speed-level behavior, PSR-3 context handling, and the supported PHP range.
 - Documented why `Logger` constructor configuration is typed as `array<string,mixed>`.
+- Describe `FixedLoggerTime` as a deterministic helper for `LoggerTest.php`.
 
 ### Removed
 
@@ -53,6 +44,15 @@ refactor: fix PSR-3 context handling
 - Fixed unsupported string log levels to throw `Psr\Log\InvalidArgumentException` instead of writing a secondary log entry.
 - Fixed logging level names to fall back to `unknown` for numeric levels without a configured name.
 - Fixed log message normalization so PHPStan can prove messages are strings before writing to `error_log()`.
+- Move `FixedLoggerTime` into its own test helper file to satisfy PHPCS class-per-file rules.
+- Fix PHPStan findings in logger tests after adding log-injection coverage.
+
+### Security
+
+- Use a runtime-created log directory for the demo logger destination.
+- Warn that `logging_file` must stay trusted and outside the public web directory.
+- Escape control characters in log-line fields to prevent forged log entries.
+- Promote `webmozart/assert` to runtime dependencies so production installs include the assertion class used by `Logger`.
 
 ## [2.0.5] - 2026-03-08
 
