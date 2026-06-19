@@ -16,7 +16,8 @@ $conf = array(
     // THESE ARE THE DEFAULT SETTINGS
     // 0 = send message to PHP's system logger; 3 appends to the file destination set in 'logging_file'
     Logger::CONF_ERROR_LOG_MESSAGE_TYPE => 0,
-    // if error_log_message_type equals 3, the message is appended to this file destination (path and name)
+    // if error_log_message_type equals 3, the message is appended to this file destination (path and name);
+    // keep this path trusted and outside the public web directory
     Logger::CONF_LOGGING_FILE => '',
     // verbosity: log up to the level set here, default=5 = debug; level 6 = speed is ignored by default
     Logger::CONF_LOGGING_LEVEL => 5,
@@ -35,6 +36,8 @@ $logger = new Logger($conf);
 ```
 
 See [test.php](test.php) for usage.
+
+Security note: `logging_file` is a filesystem destination. Keep it under application control, do not fill it directly from user input, environment values, or request data without validation, and prefer a directory outside the public web root so logs cannot be downloaded by clients.
 
 When using `log()` directly, pass a standard PSR-3 string level such as `LogLevel::INFO` or a numeric level from `CONF_LOGGING_LEVEL_NAME`. The optional context key `error_number`, or the first numeric context value, selects the category written in the log prefix; other PSR-3 context values are left untouched and are not interpolated into the message.
 

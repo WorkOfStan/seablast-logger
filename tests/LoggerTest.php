@@ -14,7 +14,7 @@ class LoggerTest extends TestCase
     /** @var string */
     private $tmpDir;
 
-    /** @var array<string,mixed> */
+    /** @var array<mixed> */
     private $serverBackup;
 
     /**
@@ -147,7 +147,6 @@ class LoggerTest extends TestCase
         self::assertSame(1, substr_count($contents, PHP_EOL));
 
         $lineWithoutEnding = substr($contents, 0, -strlen(PHP_EOL));
-        self::assertIsString($lineWithoutEnding);
         self::assertStringNotContainsString("\r", $lineWithoutEnding);
         self::assertStringNotContainsString("\n", $lineWithoutEnding);
         self::assertStringNotContainsString("\t", $lineWithoutEnding);

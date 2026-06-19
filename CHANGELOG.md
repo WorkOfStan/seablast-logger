@@ -25,12 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Fixed` for any bugfixes
 
+- Fix PHPStan findings in logger tests after adding log-injection coverage.
 - Fixed PSR-3 context handling so non-numeric context values no longer get cast while resolving the optional log error number.Allowing for `$logger->info('Failed request', ['exception' => $e]);` extra data.
 - Fixed unsupported string log levels to throw `Psr\Log\InvalidArgumentException` instead of writing a secondary log entry.
 - Fixed logging level names to fall back to `unknown` for numeric levels without a configured name.
 
 ### `Security` in case of vulnerabilities
 
+- Warn that `logging_file` must stay trusted and outside the public web directory.
 - Escape control characters in log-line fields to prevent forged log entries.
 - Promote `webmozart/assert` to runtime dependencies so production installs include the assertion class used by `Logger`.
 
