@@ -1,5 +1,9 @@
 # seablast-logger
 
+[![Total Downloads](https://img.shields.io/packagist/dt/seablast/logger.svg)](https://packagist.org/packages/seablast/logger)
+[![Latest Stable Version](https://img.shields.io/packagist/v/seablast/logger.svg)](https://packagist.org/packages/seablast/logger)
+[![Polish the code](https://github.com/WorkOfStan/seablast-logger/actions/workflows/polish-the-code.yml/badge.svg)](https://github.com/WorkOfStan/seablast-logger/actions/workflows/polish-the-code.yml)
+
 A [PSR-3](http://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity.
 
 The logging level verbosity can be tailored to suit different environments.
