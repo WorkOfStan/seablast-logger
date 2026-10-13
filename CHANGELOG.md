@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
+- Sort PHP class declarations alphabetically.
+
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
@@ -115,13 +117,15 @@ ci: PHPUnit test for class LoggerTime
 
 ## [2.0] - 2024-07-27
 
-Stable version for `"php": "^7.1 || ^8.0"`. (As of PHP 7.1.0 visibility modifiers are allowed for class constants.)
+refactor: Stable version for `"php": "^7.1 || ^8.0"`. (As of PHP 7.1.0 visibility modifiers are allowed for class constants.)
 
 ## [1.0] - 2024-07-27
 
-Stable version for `"php": "^5.3 || ^7.0"`
+refactor: Stable version for `"php": "^5.3 || ^7.0"`
 
 ## [0.2] - 2024-07-23
+
+feat: `Psr\Log\LogLevel` constants accepted as `$level`
 
 ### Added
 
@@ -133,7 +137,7 @@ Stable version for `"php": "^5.3 || ^7.0"`
 
 ## [0.1] - 2024-07-12
 
-- A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
+feat: A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
 
 [Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.6...HEAD
 [2.0.6]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.5...v2.0.6

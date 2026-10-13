@@ -143,53 +143,6 @@ class Logger extends AbstractLogger implements LoggerInterface
     }
 
     /**
-     * Class doesn't automatically use any GET parameter to override the set logging level,
-     * as it could be used to flood the error log.
-     * It is however possible to programmatically raise the logging level set in configuration.
-     *
-     * @param int $newLevel
-     *
-     * @return void
-     */
-    public function logAtLeastToLevel(int $newLevel): void
-    {
-        $this->overrideLoggingLevel = (int) $newLevel;
-    }
-
-    /**
-     * @return float
-     */
-    public function getLastRunningTime(): float
-    {
-        return $this->runningTime;
-    }
-
-    /**
-     * DI setter.
-     *
-     * @param int|string $user
-     *
-     * @return void
-     */
-    public function setUser($user): void
-    {
-        $this->user = (string) $user;
-    }
-
-    /**
-     * System is unusable.
-     *
-     * @param mixed $message PSR-3 message string or stringable object.
-     * @param array<int|string,mixed> $context
-     *
-     * @return void
-     */
-    public function emergency($message, array $context = []): void
-    {
-        $this->log(0, $message, $context);
-    }
-
-    /**
      * Action must be taken immediately.
      *
      * Example: Entire website down, database unavailable, etc. This should
@@ -221,6 +174,32 @@ class Logger extends AbstractLogger implements LoggerInterface
     }
 
     /**
+     * Detailed debug information.
+     *
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
+     *
+     * @return void
+     */
+    public function debug($message, array $context = []): void
+    {
+        $this->log(5, $message, $context);
+    }
+
+    /**
+     * System is unusable.
+     *
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
+     *
+     * @return void
+     */
+    public function emergency($message, array $context = []): void
+    {
+        $this->log(0, $message, $context);
+    }
+
+    /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
@@ -235,32 +214,49 @@ class Logger extends AbstractLogger implements LoggerInterface
     }
 
     /**
-     * Exceptional occurrences that are not errors.
-     *
-     * Example: Use of deprecated APIs, poor use of an API, undesirable things
-     * that are not necessarily wrong.
-     *
-     * @param mixed $message PSR-3 message string or stringable object.
      * @param array<int|string,mixed> $context
      *
-     * @return void
+     * @return int
      */
-    public function warning($message, array $context = []): void
+    private function getContextErrorNumber(array $context): int
     {
-        $this->log(3, $message, $context);
+        if ($context === []) {
+            return 0;
+        }
+
+        if (
+            isset($context['error_number'])
+            && (is_int($context['error_number']) || is_numeric($context['error_number']))
+        ) {
+            return (int) $context['error_number'];
+        }
+
+        $firstValue = reset($context);
+        if (is_int($firstValue) || is_numeric($firstValue)) {
+            return (int) $firstValue;
+        }
+
+        return 0;
     }
 
     /**
-     * Normal but significant events.
-     *
-     * @param mixed $message PSR-3 message string or stringable object.
-     * @param array<int|string,mixed> $context
-     *
-     * @return void
+     * @return float
      */
-    public function notice($message, array $context = []): void
+    public function getLastRunningTime(): float
     {
-        $this->log(4, $message, $context);
+        return $this->runningTime;
+    }
+
+    /**
+     * @return string
+     */
+    private function getLoggingLevelName(int $level): string
+    {
+        if (array_key_exists($level, $this->loggingLevelName)) {
+            return $this->loggingLevelName[$level];
+        }
+
+        return $this->loggingLevelName[0] ?? 'unknown';
     }
 
     /**
@@ -276,19 +272,6 @@ class Logger extends AbstractLogger implements LoggerInterface
     public function info($message, array $context = []): void
     {
         $this->log(4, $message, $context);
-    }
-
-    /**
-     * Detailed debug information.
-     *
-     * @param mixed $message PSR-3 message string or stringable object.
-     * @param array<int|string,mixed> $context
-     *
-     * @return void
-     */
-    public function debug($message, array $context = []): void
-    {
-        $this->log(5, $message, $context);
     }
 
     /**
@@ -430,6 +413,20 @@ class Logger extends AbstractLogger implements LoggerInterface
     }
 
     /**
+     * Class doesn't automatically use any GET parameter to override the set logging level,
+     * as it could be used to flood the error log.
+     * It is however possible to programmatically raise the logging level set in configuration.
+     *
+     * @param int $newLevel
+     *
+     * @return void
+     */
+    public function logAtLeastToLevel(int $newLevel): void
+    {
+        $this->overrideLoggingLevel = (int) $newLevel;
+    }
+
+    /**
      * @param mixed $level
      *
      * @return int
@@ -470,6 +467,19 @@ class Logger extends AbstractLogger implements LoggerInterface
     }
 
     /**
+     * Normal but significant events.
+     *
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
+     *
+     * @return void
+     */
+    public function notice($message, array $context = []): void
+    {
+        $this->log(4, $message, $context);
+    }
+
+    /**
      * @return string
      */
     private function sanitizeLogText(string $value): string
@@ -496,41 +506,31 @@ class Logger extends AbstractLogger implements LoggerInterface
     }
 
     /**
-     * @param array<int|string,mixed> $context
+     * DI setter.
      *
-     * @return int
+     * @param int|string $user
+     *
+     * @return void
      */
-    private function getContextErrorNumber(array $context): int
+    public function setUser($user): void
     {
-        if ($context === []) {
-            return 0;
-        }
-
-        if (
-            isset($context['error_number'])
-            && (is_int($context['error_number']) || is_numeric($context['error_number']))
-        ) {
-            return (int) $context['error_number'];
-        }
-
-        $firstValue = reset($context);
-        if (is_int($firstValue) || is_numeric($firstValue)) {
-            return (int) $firstValue;
-        }
-
-        return 0;
+        $this->user = (string) $user;
     }
 
     /**
-     * @return string
+     * Exceptional occurrences that are not errors.
+     *
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
+     *
+     * @param mixed $message PSR-3 message string or stringable object.
+     * @param array<int|string,mixed> $context
+     *
+     * @return void
      */
-    private function getLoggingLevelName(int $level): string
+    public function warning($message, array $context = []): void
     {
-        if (array_key_exists($level, $this->loggingLevelName)) {
-            return $this->loggingLevelName[$level];
-        }
-
-        return $this->loggingLevelName[0] ?? 'unknown';
+        $this->log(3, $message, $context);
     }
 
     /** Alternative way:
