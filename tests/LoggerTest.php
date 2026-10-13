@@ -217,5 +217,4 @@ class LoggerTest extends TestCase
 
         $logger->log('verbose', 'Unsupported PSR-3 level');
     }
-
 }
