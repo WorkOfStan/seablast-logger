@@ -62,7 +62,6 @@ class Logger extends AbstractLogger implements LoggerInterface
     private $logProfilingStep = false;
     /** @var bool|string when string, treated as admin email for level <=1 notifications */
     private $mailForAdminEnabled = false;
-
     /** @var int */
     private $overrideLoggingLevel;
     /** @var float */

@@ -11,8 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed` for changes in existing functionality
 
-- Sort PHP class declarations alphabetically.
-
 ### `Deprecated` for soon-to-be removed features
 
 ### `Removed` for now removed features
@@ -20,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `Fixed` for any bugfixes
 
 ### `Security` in case of vulnerabilities
+
+## [2.0.7] - TBD
+
+### Changed
+
+- Sort PHP class declarations alphabetically.
 
 ## [2.0.6] - 2026-06-28
 
