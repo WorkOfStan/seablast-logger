@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Sort PHP class declarations alphabetically.
-- ci: bump super-linter to v9.0.0
+- ci: bump Seablast Actions to v0.2.12, hence bump super-linter to v9.0.0
 
 ## [2.0.6] - 2026-06-28
 
