@@ -39,4 +39,4 @@ On Windows, do not run `.sh` helper scripts directly from PowerShell. Use Git Ba
 
 ## Files To Avoid
 
-Do not inspect, lint, or recurse into `.tmp`, `.pytest-tmp`, `.pytest_cache`, `.venv`, `vendor`, or build artifacts unless the user specifically asks for those generated files.
+Do not inspect, lint, or recurse into `.tmp`, `vendor`, or build artifacts unless the user specifically asks for those generated files.
