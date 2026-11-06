@@ -21,10 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.7] - TBD
 
+chore: Sort PHP class declarations alphabetically
+
 ### Changed
 
-- Sort PHP class declarations alphabetically.
+- chore: Sort PHP class declarations alphabetically.
 - ci: bump Seablast Actions to v0.2.12, hence bump super-linter to v9.0.0
+- docs: Clarify logger setup, severity and context rules, destinations, and timing; organize maintainer guidance with linked class references and focused validation.
 
 ## [2.0.6] - 2026-06-28
 
