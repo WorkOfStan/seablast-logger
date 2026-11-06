@@ -67,12 +67,12 @@ $logger = new Logger($conf);
 
 ### Destinations and failures
 
-| Setting | Behavior |
-| --- | --- |
-| `CONF_ERROR_LOG_MESSAGE_TYPE = 0` | PHP's system logger; the configured file destination is not used |
-| `CONF_ERROR_LOG_MESSAGE_TYPE = 3` | Append to the configured file; an empty base path falls back to the system logger with a diagnostic |
-| `CONF_LOG_MONTHLY_ROTATION = true` | A base path `/private/log/app` becomes `/private/log/app.Y-m.log` |
-| `CONF_LOG_MONTHLY_ROTATION = false` | The same base path becomes `/private/log/app.log` |
+| Setting                                           | Behavior                                                                                                        |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `CONF_ERROR_LOG_MESSAGE_TYPE = 0`                 | PHP's system logger; the configured file destination is not used                                                |
+| `CONF_ERROR_LOG_MESSAGE_TYPE = 3`                 | Append to the configured file; an empty base path falls back to the system logger with a diagnostic             |
+| `CONF_LOG_MONTHLY_ROTATION = true`                | A base path `/private/log/app` becomes `/private/log/app.Y-m.log`                                               |
+| `CONF_LOG_MONTHLY_ROTATION = false`               | The same base path becomes `/private/log/app.log`                                                               |
 | `CONF_MAIL_FOR_ADMIN_ENABLED = 'ops@example.com'` | Also email level-1 messages (alert/critical) that pass filtering; boolean `true` alone does not enable delivery |
 
 Use message types 0 or 3; other nonzero values are currently coerced to file mode.
@@ -83,15 +83,15 @@ If `error_log()` reports failure, the logger throws [ErrorLogFailureException](s
 
 Lower numbers are more severe. Normal filtering admits levels at or below `max(configured verbosity, runtime override)`:
 
-| PSR-3 method / string level | Numeric level | Default label |
-| --- | --- | --- |
-| `emergency` | 0 | `unknown` |
-| `alert`, `critical` | 1 | `fatal` |
-| `error` | 2 | `error` |
-| `warning` | 3 | `warning` |
-| `notice`, `info` | 4 | `info` |
-| `debug` | 5 | `debug` |
-| No PSR-3 equivalent; pass integer `6` | 6 | `speed` |
+| PSR-3 method / string level           | Numeric level | Default label |
+| ------------------------------------- | ------------- | ------------- |
+| `emergency`                           | 0             | `unknown`     |
+| `alert`, `critical`                   | 1             | `fatal`       |
+| `error`                               | 2             | `error`       |
+| `warning`                             | 3             | `warning`     |
+| `notice`, `info`                      | 4             | `info`        |
+| `debug`                               | 5             | `debug`       |
+| No PSR-3 equivalent; pass integer `6` | 6             | `speed`       |
 
 Default verbosity 5 admits levels 0-5 and normally ignores level 6. `log()` accepts standard PSR-3 strings or integer levels, not numeric strings or custom label names.
 Changing `CONF_LOGGING_LEVEL_NAME` changes labels, not the PSR-3 mapping; unmapped integers use label 0, or `unknown` if absent. Unsupported string levels/types and messages other than strings or stringable objects throw `Psr\Log\InvalidArgumentException`.
@@ -110,14 +110,14 @@ $logger->log(6, 'Page generation timing', ['error_number' => 6]); // written: ca
 
 ## Runtime adjustment
 
-| Method / setting | Behavior |
-| --- | --- |
-| `Logger::logAtLeastToLevel(int $newLevel)` | Replace the runtime override; cannot reduce effective verbosity below the constructor setting |
-| `Logger::setUser($user)` | Accept an integer or string identifier for subsequent log prefixes; defaults to `unidentified` |
-| `Logger::getLastRunningTime()` | Seconds since the injected timer's start at the last log call that passed filtering; initially 0 |
-| `CONF_LOG_PROFILING_STEP` | A positive threshold in seconds adds `SLOWSTEP` when time since the previous log call that passed filtering exceeds it; `false` disables it |
-| `LoggerTime::getRunningTime()` | Current elapsed seconds, rounded to four decimal places |
-| `LoggerTime::pageGeneratedIn(string $langStringPageGeneratedIn = '%s')` | Replace `%s` in a format string with elapsed seconds |
+| Method / setting                                                        | Behavior                                                                                                                                    |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Logger::logAtLeastToLevel(int $newLevel)`                              | Replace the runtime override; cannot reduce effective verbosity below the constructor setting                                               |
+| `Logger::setUser($user)`                                                | Accept an integer or string identifier for subsequent log prefixes; defaults to `unidentified`                                              |
+| `Logger::getLastRunningTime()`                                          | Seconds since the injected timer's start at the last log call that passed filtering; initially 0                                            |
+| `CONF_LOG_PROFILING_STEP`                                               | A positive threshold in seconds adds `SLOWSTEP` when time since the previous log call that passed filtering exceeds it; `false` disables it |
+| `LoggerTime::getRunningTime()`                                          | Current elapsed seconds, rounded to four decimal places                                                                                     |
+| `LoggerTime::pageGeneratedIn(string $langStringPageGeneratedIn = '%s')` | Replace `%s` in a format string with elapsed seconds                                                                                        |
 
 The optional second constructor argument is a `LoggerTime`. Its start is captured when the timer is constructed; construct it at request start if that is the desired baseline. The default timer starts with the logger, not automatically with PHP's request.
 

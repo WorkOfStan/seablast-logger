@@ -8,11 +8,11 @@ Keep the Composer PHP constraint exactly `"php": ">=7.2 <8.6"` unless the user e
 
 ## Classes and supporting files
 
-| Class (linked to source) | Responsibility |
-| --- | --- |
-| [Seablast\Logger\ErrorLogFailureException](src/ErrorLogFailureException.php) | Signal a reported `error_log()` file/system/mail failure |
-| [Seablast\Logger\Logger](src/Logger.php) | PSR-3 methods, numeric filtering, context category, record formatting, destinations |
-| [Seablast\Logger\LoggerTime](src/LoggerTime.php) | Timer baseline, elapsed seconds, formatted page-generation time |
+| Class (linked to source)                                                     | Responsibility                                                                      |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [Seablast\Logger\ErrorLogFailureException](src/ErrorLogFailureException.php) | Signal a reported `error_log()` file/system/mail failure                            |
+| [Seablast\Logger\Logger](src/Logger.php)                                     | PSR-3 methods, numeric filtering, context category, record formatting, destinations |
+| [Seablast\Logger\LoggerTime](src/LoggerTime.php)                             | Timer baseline, elapsed seconds, formatted page-generation time                     |
 
 [test.php](test.php) demonstrates file logging and runtime verbosity changes.
 [phpunit.xml](phpunit.xml) configures local tests;
@@ -51,11 +51,11 @@ Do not modify Composer or run `self-update`. Tests need filesystem access but no
 
 ## Validation
 
-| Change | Regression entry points |
-| --- | --- |
-| File output, normal verbosity, runtime override, context, invalid levels, control-character escaping | [tests/LoggerTest.php](tests/LoggerTest.php) |
-| Elapsed time and formatted timing strings | [tests/LoggerTimeTest.php](tests/LoggerTimeTest.php) |
-| Deterministic elapsed-time fixture for output tests | [Seablast\Logger\Tests\FixedLoggerTime](tests/FixedLoggerTime.php) |
+| Change                                                                                               | Regression entry points                                            |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| File output, normal verbosity, runtime override, context, invalid levels, control-character escaping | [tests/LoggerTest.php](tests/LoggerTest.php)                       |
+| Elapsed time and formatted timing strings                                                            | [tests/LoggerTimeTest.php](tests/LoggerTimeTest.php)               |
+| Deterministic elapsed-time fixture for output tests                                                  | [Seablast\Logger\Tests\FixedLoggerTime](tests/FixedLoggerTime.php) |
 
 `LoggerTest` creates uniquely named `.tmp/phpunit-logger-*` directories and removes its own fixtures; it restores `$_SERVER` after each test. Add focused regressions when changing branches not covered by these tests, such as mail or monthly rotation.
 
