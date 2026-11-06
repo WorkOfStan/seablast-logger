@@ -4,7 +4,7 @@
 
 Maintain `seablast/logger`, a standalone PHP PSR-3 logger backed by `error_log()`. [README.md](README.md) owns installation, configuration, API behavior, and operational security; this file owns maintainer constraints and validation. Read the relevant contract before editing and update it when behavior changes.
 
-Keep the Composer PHP constraint exactly `"php": ">=7.2 <8.6"` unless the user explicitly requests a supported-version change. Preserve the dependency ranges in [composer.json](composer.json), including supported PSR-3 interface versions.
+Keep the Composer PHP constraint exactly `"php": ">=7.2 <8.7"` unless the user explicitly requests a supported-version change. Preserve the dependency ranges in [composer.json](composer.json), including supported PSR-3 interface versions.
 
 ## Classes and supporting files
 

@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Security` in case of vulnerabilities
 
-## [2.0.7] - TBD
+## [2.0.7] - 2026-11-06
 
 chore: Sort PHP class declarations alphabetically
 
@@ -147,9 +147,10 @@ feat: `Psr\Log\LogLevel` constants accepted as `$level`
 
 ## [0.1] - 2024-07-12
 
-feat: A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity (based on Backyard\BackyardError)
+feat: A [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant logger with adjustable verbosity. (Based on `Backyard\BackyardError`.)
 
-[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.6...HEAD
+[Unreleased]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.7...HEAD
+[2.0.7]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.6...v2.0.7
 [2.0.6]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/WorkOfStan/seablast-logger/compare/v2.0.3...v2.0.4

@@ -15,7 +15,7 @@ Maintainer rules and validation: [AGENTS.md](AGENTS.md).
 composer require seablast/logger
 ```
 
-Requires PHP `>=7.2 <8.6`; compatible dependency ranges are in [composer.json](composer.json).
+Requires PHP `>=7.2 <8.7`; compatible dependency ranges are in [composer.json](composer.json).
 The logger implements the [PSR-3 interface](https://www.php-fig.org/psr/psr-3/).
 
 ## Usage
