@@ -3,7 +3,7 @@
   "description": "A PSR-3 compliant error_log() logger with adjustable verbosity.",
   "type": "library",
   "require": {
-    "php": ">=7.2 <8.8",
+    "php": ">=7.2 <8.7",
     "psr/log": "^1.0.1 || ^2.0 || ^3.0",
     "tracy/tracy": "^2.9.8 || ^2.10.9 || ^2.11.0",
     "webmozart/assert": "^1.11 || ^2.1.6"
