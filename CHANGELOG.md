@@ -28,6 +28,7 @@ chore: Sort PHP class declarations alphabetically
 - chore: Sort PHP class declarations alphabetically.
 - ci: bump Seablast Actions to v0.2.12, hence bump super-linter to v9.0.0
 - docs: Clarify logger setup, severity and context rules, destinations, and timing; organize maintainer guidance with linked class references and focused validation.
+- docs: allow `README` and `TODO` in natural language linting
 
 ## [2.0.6] - 2026-06-28
 
